@@ -14,42 +14,57 @@ public class RoadGenerator : MonoBehaviour {
 
 	public static Mesh GenerateRoadSegments(Vector3 [] vertices)
 	{
+		if(vertices.Length < 2)
+			return null;
+		Vector3[] vertices2 = new Vector3[vertices.Length];
+		int i = 0, length = 1;
+		vertices2[0] = vertices[0];
+		//merge all similar(distance < .00001) neighbour points
+		for(; i < vertices.Length - 1; i++)
+		{
+			if(Vector3.Distance(vertices[i], vertices[i + 1]) > .00001f)
+			{
+				vertices2[length++] = vertices[i + 1];
+			}
+		}
+		if(length < 2)
+			return null;
+		
 		float halfMeshWidth = .5f;
 		float meshWidth = 2 * halfMeshWidth;
-		Vector3 v1, v2 = vertices[1] - vertices[0];
+		Vector3 v1, v2 = vertices2[1] - vertices2[0];
 		float meshLength1 = v2.magnitude;
 		float meshLength = 0;
 		Vector3 upright;
 		upright = GetUprightVector(v2);
 		upright *= halfMeshWidth;
-		Vector3[] vertices1 = new Vector3[(vertices.Length - 1) * 4];
-		Vector2[] uv = new Vector2[(vertices.Length - 1) * 4];
-		int[] triangles = new int[6 * (vertices.Length - 1)];
+		Vector3[] vertices1 = new Vector3[(length - 1) * 4];
+		Vector2[] uv = new Vector2[(length - 1) * 4];
+		int[] triangles = new int[6 * (length - 1)];
 		triangles[0] = 0;
 		triangles[1] = 1;
 		triangles[2] = 2;
 		triangles[3] = 2;
 		triangles[4] = 3;
 		triangles[5] = 0;
-		Vector3[] normals = new Vector3[(vertices.Length - 1) * 4];
-		int i = 0;
-		for(; i < vertices1.Length; i++)
+		Vector3[] normals = new Vector3[(length - 1) * 4];
+		for(i = 0; i < vertices1.Length; i++)
 		{
 			normals[i] = Vector3.up;
 		};
-		vertices1[0] = vertices[0] + upright;
-		vertices1[1] = vertices[0] + -upright;
+		vertices1[0] = vertices2[0] + upright;
+		vertices1[1] = vertices2[0] + -upright;
 		uv[0] = new Vector2(0, 0);
 		uv[1] =	new Vector2(0, meshWidth);
 		int index = 2;
 		float f = 0;
 		float currentU = 0;
-		for(i = 0; i < vertices.Length - 2; i++)
+		for(i = 0; i < length - 2; i++)
 		{
 			v1 = -v2;
 			v1.Normalize();
 			meshLength = meshLength1;
-			v2 = vertices[i + 2] - vertices[i + 1];
+			v2 = vertices2[i + 2] - vertices2[i + 1];
 			meshLength1 = v2.magnitude;
 			v2.Normalize();
 			Vector3 v3 = v1 + v2;
@@ -97,9 +112,9 @@ public class RoadGenerator : MonoBehaviour {
 				u4 = currentU - f;
 			}
 
-			vertices1[index] = vertices[i + 1] + -v3;
+			vertices1[index] = vertices2[i + 1] + -v3;
 			uv[index++] = new Vector2(u1, meshWidth);
-			vertices1[index] = vertices[i + 1] + v3;
+			vertices1[index] = vertices2[i + 1] + v3;
 			uv[index++] = new Vector2(u2, 0);
 
 			triangles[i * 6 + 6] = i * 4 + 4;
@@ -110,24 +125,24 @@ public class RoadGenerator : MonoBehaviour {
 			triangles[i * 6 + 11] = i * 4 + 4;
 			if(turnUpsideDown)
 			{
-				vertices1[index] = vertices[i + 1] + -v3;
+				vertices1[index] = vertices2[i + 1] + -v3;
 				uv[index++] = new Vector2(u4, 0);
-				vertices1[index] = vertices[i + 1] + v3;
+				vertices1[index] = vertices2[i + 1] + v3;
 				uv[index++] = new Vector2(u3, meshWidth);
 			}
 			else
 			{
-				vertices1[index] = vertices[i + 1] + v3;
+				vertices1[index] = vertices2[i + 1] + v3;
 				uv[index++] = new Vector2(u3, 0);
-				vertices1[index] = vertices[i + 1] + -v3;
+				vertices1[index] = vertices2[i + 1] + -v3;
 				uv[index++] = new Vector2(u4, meshWidth);
 			}
 			upright = GetUprightVector(v2);
 			upright *= halfMeshWidth;
 		}
-		vertices1[index] = vertices[i + 1] - upright;
+		vertices1[index] = vertices2[i + 1] - upright;
 		uv[index++] = new Vector2(currentU + meshLength1, meshWidth); 
-		vertices1[index] = vertices[i + 1] + upright;
+		vertices1[index] = vertices2[i + 1] + upright;
 		uv[index] = new Vector2(currentU + meshLength1, 0);
 
 		Mesh mesh = new Mesh();
