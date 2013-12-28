@@ -19,12 +19,15 @@ public class LSystem : Road {
 	private Color colour;
 	private float angle = 22.5f;
 	private int iterationNum;
+	private int pathIndex = 0;
 	private List<Vector3> positionStack = new List<Vector3>();
 	
 	//Road Creation
 	private float roadLength;
+	private List<List<Vector3>> roadPositions = new List<List<Vector3>>();
 	
 	public LSystem(string Axiom, int PositionX, int PositionZ, string Rule, int Iteration){
+		roadPositions.Add(new List<Vector3>());
 		//Root Position
 		rootX = PositionX;
 		rootZ = PositionZ;
@@ -79,8 +82,45 @@ public class LSystem : Road {
 		}
 		Debug.Log(finalString); 
 	}
-	
-	public void drawLines()
+
+	public void drawRoadMesh(){
+		float offset = 0.1f;
+		for(int i = 0; i < roadPositions.Count; i++)
+		{
+			GameObject road = new GameObject("Road", typeof(MeshFilter), typeof(MeshRenderer));
+			road.transform.position = new Vector3(0, offset, 0);
+			offset += .0001f;
+
+			//Vector3[] vertices = 
+			//{	
+			//	
+			//	new Vector3(-5, 0, -5),
+			//	new Vector3(0, 0, 0),
+			//	new Vector3(5, 0, -5),
+			//	new Vector3(0,0,-10),
+			//	
+			//	
+			//};
+
+			Vector3[] vertices = (Vector3[])roadPositions[i].ToArray();
+
+
+			//lsystem = GameObject.Find
+
+			//Vector3[] vertices = lsystemScript.Road
+
+
+			Mesh mesh = RoadGenerator.GenerateRoadSegments(vertices);
+
+			MeshFilter meshFilter = road.GetComponent<MeshFilter>();
+			meshFilter.mesh = mesh;
+			MeshRenderer meshRender = road.GetComponent<MeshRenderer>();
+			meshRender.material = Resources.Load("RoadMat") as Material;
+			meshRender.castShadows = false;		//Since the mesh is slightly above the ground, it may cast shadow so lets turn it off
+		}
+	}
+
+	public void GenerateRoadPosition()
 	{
 		int stackCounter = -1;
 		
@@ -90,7 +130,7 @@ public class LSystem : Road {
 		{
 			
 			char c = finalString[i];
-			roadLength = 50 + Random.Range(20, 50);
+			roadLength = 5;// + Random.Range(2, 5);
 			if(c == 'F')//draw line
 			{
 				float x_delta = roadLength * Mathf.Sin(position.y);
@@ -98,18 +138,22 @@ public class LSystem : Road {
 				
 				
 				//road.drawRoad(position, new Vector3(position.x + x_delta, 0, position.z + z_delta));
-				drawRoad(new Vector3(position.x, 0, position.z), new Vector3(position.x + x_delta, 0, position.z + z_delta));
+				//drawRoad(new Vector3(position.x, 0, position.z), new Vector3(position.x + x_delta, 0, position.z + z_delta));
+				//Store in the Vector3 Position into an array
+				roadPositions[pathIndex].Add(new Vector3(position.x, 0, position.z));
+				roadPositions[pathIndex].Add(new Vector3(position.x + x_delta, 0, position.z + z_delta));
+
 				position.x += x_delta;
 				position.z += z_delta;
 				
 			}
 			else if(c == '+')//turn right
 			{
-				position.y += angle + Random.Range(20, 50);
+				position.y += angle;// + Random.Range(20, 50);
 			}
 			else if(c == '-')//turn left
 			{
-				position.y -= angle + Random.Range(20, 50);
+				position.y -= angle;// + Random.Range(20, 50);
 			}
 			else if(c == '[')
 			{
@@ -120,6 +164,8 @@ public class LSystem : Road {
 			}
 			else if(c == ']')
 			{
+				pathIndex++;
+				roadPositions.Add(new List<Vector3>());
 				//Debug.Log("Current Character: " + c);
 				if(stackCounter < 0){
 					Debug.Log("We have MINUS!"); 
@@ -128,22 +174,21 @@ public class LSystem : Road {
 				//stackCounter--;
 				//Debug.Log("here: " + stackCounter);
 				position = positionStack[stackCounter];
-				Debug.Log("Before Stack Counter" + stackCounter);
+				//Debug.Log("Before Stack Counter" + stackCounter);
 				
 				positionStack.RemoveAt(stackCounter);
-				Debug.Log("After Stack Counter" + stackCounter);
+				//Debug.Log("After Stack Counter" + stackCounter);
 				
 				
 				stackCounter--;
-				
+
 			}
 			
 			currentString += c;
-			Debug.Log("Current Character: " + c + "  Current StackCounter: " + stackCounter);
+			//Debug.Log("Current Character: " + c + "  Current StackCounter: " + stackCounter);
+
 		}
-		
-		
-		
+
 	}
 	
 	// Use this for initialization
@@ -151,11 +196,13 @@ public class LSystem : Road {
 		
 		//road = gameObject.GetComponent<Road>();
 		LSystem lsystem = new LSystem("X",0,0,"F-[[X]+X]+FF[+FX]-X",3);
-		//lsystem = gameObject.GetComponent<LSystem>();
+		//LSystem lsystemScript = gameObject.GetComponent<LSystem>();
 		
 		
 		lsystem.iterate();
-		lsystem.drawLines();
+
+		lsystem.GenerateRoadPosition();
+		lsystem.drawRoadMesh();
 		
 		//road.drawRoad(position, new Vector3(position.x + 100, 0, position.z + 100));
 	}
