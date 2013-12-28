@@ -84,40 +84,21 @@ public class LSystem : Road {
 	}
 
 	public void drawRoadMesh(){
-		float offset = 0.1f;
+
+		Mesh[] meshs = new Mesh[roadPositions.Count];
 		for(int i = 0; i < roadPositions.Count; i++)
 		{
-			GameObject road = new GameObject("Road", typeof(MeshFilter), typeof(MeshRenderer));
-			road.transform.position = new Vector3(0, offset, 0);
-			offset += .0001f;
-
-			//Vector3[] vertices = 
-			//{	
-			//	
-			//	new Vector3(-5, 0, -5),
-			//	new Vector3(0, 0, 0),
-			//	new Vector3(5, 0, -5),
-			//	new Vector3(0,0,-10),
-			//	
-			//	
-			//};
-
-			Vector3[] vertices = (Vector3[])roadPositions[i].ToArray();
-
-
-			//lsystem = GameObject.Find
-
-			//Vector3[] vertices = lsystemScript.Road
-
-
-			Mesh mesh = RoadGenerator.GenerateRoadSegments(vertices);
-
-			MeshFilter meshFilter = road.GetComponent<MeshFilter>();
-			meshFilter.mesh = mesh;
-			MeshRenderer meshRender = road.GetComponent<MeshRenderer>();
-			meshRender.material = Resources.Load("RoadMat") as Material;
-			meshRender.castShadows = false;		//Since the mesh is slightly above the ground, it may cast shadow so lets turn it off
+			meshs[i] = RoadGenerator.GenerateRoadSegments(roadPositions[i].ToArray());
 		}
+		Mesh mesh = MeshCombiner.CombineMesh(meshs);
+		GameObject road = new GameObject("Road", typeof(MeshFilter), typeof(MeshRenderer));
+		road.transform.position = new Vector3(0, .1f, 0);
+
+		MeshFilter meshFilter = road.GetComponent<MeshFilter>();
+		meshFilter.mesh = mesh;
+		MeshRenderer meshRender = road.GetComponent<MeshRenderer>();
+		meshRender.material = Resources.Load("RoadMat") as Material;
+		meshRender.castShadows = false;		//Since the mesh is slightly above the ground, it may cast shadow so lets turn it off
 	}
 
 	public void GenerateRoadPosition()
