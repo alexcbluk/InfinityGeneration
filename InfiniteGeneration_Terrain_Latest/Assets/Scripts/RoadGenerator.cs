@@ -30,7 +30,7 @@ public class RoadGenerator : MonoBehaviour {
 		if(length < 2)
 			return null;
 		
-		float halfMeshWidth = .5f;
+		float halfMeshWidth = 1;
 		float meshWidth = 2 * halfMeshWidth;
 		Vector3 v1, v2 = vertices2[1] - vertices2[0];
 		float meshLength1 = v2.magnitude;
@@ -89,7 +89,7 @@ public class RoadGenerator : MonoBehaviour {
 				v3 = -v3;
 				v3 *= halfMeshWidth / (Vector3.Dot(v3, upright));
 				float f3 = v3.sqrMagnitude - halfMeshWidth * halfMeshWidth;
-				if(Mathf.Abs(f3) < .0000001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
+				if(Mathf.Abs(f3) < .000001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
 					f3 = 0;
 				f = Mathf.Sqrt(f3);
 				currentU += meshLength + 2 * f;
@@ -102,7 +102,7 @@ public class RoadGenerator : MonoBehaviour {
 			{
 				v3 *= halfMeshWidth / (Vector3.Dot(v3, upright));
 				float f3 = v3.sqrMagnitude - halfMeshWidth * halfMeshWidth;
-				if(Mathf.Abs(f3) < .0000001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
+				if(Mathf.Abs(f3) < .000001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
 					f3 = 0;
 				f = Mathf.Sqrt(f3);
 				currentU += meshLength + 2 * f;
