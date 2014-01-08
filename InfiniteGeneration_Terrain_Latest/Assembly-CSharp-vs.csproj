@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\Road.cs" />
      <Compile Include="Assets\Scripts\RoadGenerator.cs" />
+     <Compile Include="Assets\Scripts\SpacePartitioning.cs" />
      <Compile Include="Assets\Scripts\TerrainGeneration.cs" />
      <None Include="Assets\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
  <Reference Include="Assembly-UnityScript-firstpass">

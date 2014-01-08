@@ -15,7 +15,7 @@ public class SpacePartitioning : MonoBehaviour {
 								new Vector3(0, 0, terrainSize.z),
 								new Vector3(terrainSize.x, 0, terrainSize.z),
 								new Vector3(terrainSize.x, 0, 0)};
-		Partition (pointsList, 2);
+		Partition (pointsList, 4);
 	}
 	
 	void Partition(Vector3[] verticesList, int counter)
@@ -30,19 +30,19 @@ public class SpacePartitioning : MonoBehaviour {
 		 	index1 = Random.Range(0, verticesList.Length-1);
 		
 		 	while((index2 = Random.Range(0, verticesList.Length-1)) == index1) ;
-//			index1 = 0;
-//			index2 = 1;
+			//index1 = 2;
+			//index2 = 1;
 			index3 = (index1+1)%verticesList.Length;
 			index4 = (index2+1)%verticesList.Length;
 			
 			//finding parametiric equation parameter t1
 		    float t1 = Random.Range(0.0f, 1.0f);	
-//			t1 = .5f;
+			t1 = .5f;
 			//finding first random point
 			Vector3 p1 = (1-t1)*verticesList[index1] + t1*verticesList[index3];
 			//finding parametiric equation parameter t
 		    float t2 = Random.Range(0.0f, 1.0f);
-//			t2 = .5f;
+			t2 = .5f;
 			//finding second random point
 			Vector3 p2 = (1-t2)*verticesList[index2] + t2*verticesList[index4];
 			
@@ -53,10 +53,20 @@ public class SpacePartitioning : MonoBehaviour {
 		
 			//Vector3 [] arr = 
 			//int i = index1, j = index2;
-		int count1 = Mathf.Abs (index1 - index2);
-		Vector3 [] collection1 = new Vector3 [count1 + 2];
-		Vector3 [] collection2 = new Vector3 [verticesList.Length - count1 + 2];
-		
+			Vector3 [] collection1;
+			Vector3 [] collection2;
+			int count1 = index2 - index1;
+			if(count1 > 0)
+			{
+				collection1 = new Vector3 [count1 + 2];
+				collection2 = new Vector3 [verticesList.Length - count1 + 2];
+			}
+			else
+			{
+				collection1 = new Vector3 [verticesList.Length + count1 + 2];
+				collection2 = new Vector3 [-count1 + 2];
+			}
+
 			collection1[0] = p1;
 			collection2[0] = p2;
 			for(int i = 1; i < collection1.Length - 1 ; i++)
@@ -70,7 +80,7 @@ public class SpacePartitioning : MonoBehaviour {
 				collection2[i] = verticesList[(index4 + i - 1) % verticesList.Length];
 			}
 			collection2[collection2.Length - 1] = p1;
-		Partition (collection2, counter - 1);
+			Partition (collection2, counter - 1);
 		
 		
 		
