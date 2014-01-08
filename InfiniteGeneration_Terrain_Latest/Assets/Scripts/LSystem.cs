@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;  // This is to use the List Collection
 
@@ -21,16 +21,23 @@ public class LSystem : Road {
 	private int iterationNum;
 	private int pathIndex = 0;
 	private List<Vector3> positionStack = new List<Vector3>();
-	
+	private Vector3 terrSize;
+	private int scaleFactor;
 	//Road Creation
 	private float roadLength;
 	private List<List<Vector3>> roadPositions = new List<List<Vector3>>();
 	
-	public LSystem(string Axiom, int PositionX, int PositionZ, string Rule, int Iteration){
+	//Road Segements
+	private List<List<Vector3>> roadSegmentList = new List<List<Vector3>>();
+
+	
+	public LSystem(string Axiom, int PositionX, int PositionZ, string Rule, int Iteration, Vector3 terrainSize){
 		roadPositions.Add(new List<Vector3>());
 		//Root Position
 		rootX = PositionX;
 		rootZ = PositionZ;
+		terrSize = terrainSize;
+		scaleFactor = 4;
 		//Properties
 		iterationNum = Iteration;
 		axiom = Axiom;
@@ -97,6 +104,7 @@ public class LSystem : Road {
 		MeshFilter meshFilter = road.GetComponent<MeshFilter>();
 		meshFilter.mesh = mesh;
 		MeshRenderer meshRender = road.GetComponent<MeshRenderer>();
+		meshRender.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
 		meshRender.material = Resources.Load("RoadMat") as Material;
 		meshRender.castShadows = false;		//Since the mesh is slightly above the ground, it may cast shadow so lets turn it off
 	}
@@ -106,35 +114,75 @@ public class LSystem : Road {
 		int stackCounter = -1;
 		
 		string currentString = "";
+
 		
 		for(int i = 0; i < finalString.Length; i++)
 		{
 			
 			char c = finalString[i];
-			roadLength = 5;// + Random.Range(2, 5);
+			roadLength = 50 + Random.Range(20, 30);
 			if(c == 'F')//draw line
 			{
 				float x_delta = roadLength * Mathf.Sin(position.y);
 				float z_delta = roadLength * Mathf.Cos(position.y);
-				
-				
-				//road.drawRoad(position, new Vector3(position.x + x_delta, 0, position.z + z_delta));
-				//drawRoad(new Vector3(position.x, 0, position.z), new Vector3(position.x + x_delta, 0, position.z + z_delta));
-				//Store in the Vector3 Position into an array
-				roadPositions[pathIndex].Add(new Vector3(position.x, 0, position.z));
-				roadPositions[pathIndex].Add(new Vector3(position.x + x_delta, 0, position.z + z_delta));
+				float x1 = position.x;
+				float z1 = position.z;
+				float x2 = position.x + x_delta;
+				float z2 = position.z + z_delta;
 
-				position.x += x_delta;
-				position.z += z_delta;
+				if(x2 >= (terrSize.x-500)/scaleFactor || x2 <= -(terrSize.x-1500)/scaleFactor || z2 >= (terrSize.z-500)/scaleFactor || z2 <= -(terrSize.z-1500)/scaleFactor)//test if road positions go outside terrain
+				{
+					Debug.Log("Outside terrain: "+position.x + ", " + position.z);
+					//position.y = -position.y;//change direction of road
+					//do nothing if positions of road go outside terrain
+				}
+				else//otherwise create road
+				{					
+					//Debug.Log("x: "+position.x);
+					//Debug.Log("z: "+position.z);
+					//road.drawRoad(position, new Vector3(position.x + x_delta, 0, position.z + z_delta));
+					//drawRoad(new Vector3(position.x, 0, position.z), new Vector3(position.x + x_delta, 0, position.z + z_delta));
+					//Store in the Vector3 Position into an array
+					roadPositions[pathIndex].Add(new Vector3(position.x, 0, position.z));
+					roadPositions[pathIndex].Add(new Vector3(position.x + x_delta, 0, position.z + z_delta));//if intersect change to intersection point
+					
+					List<Vector3> road = new List<Vector3>();
+					road.Add(new Vector3(x1, 0, z1));
+					road.Add(new Vector3(x2, 0, z2));
+					roadSegmentList.Add( road );
+					
+					for(int z = 1; z < roadSegmentList.Count; z++)
+					{
+						Vector3 V3 = roadSegmentList[z-1][0];						
+						Vector3 V4 = roadSegmentList[z-1][1];
+						
+						//Vector3 iPoint = Intersect ((new Vector3(x1, 0, z1)), (new Vector3(x2, 0, z2)), V3, V4);
+					}
+					
+					
+						
+					position.x += x_delta;
+					position.z += z_delta;
+					
+				}
 				
 			}
 			else if(c == '+')//turn right
 			{
-				position.y += angle;// + Random.Range(20, 50);
+				float a = angle + Random.Range(30, 60);
+						
+				if(a>20 && a<90)
+				{
+					position.y += a;
+				}
 			}
 			else if(c == '-')//turn left
 			{
-				position.y -= angle;// + Random.Range(20, 50);
+				float a = angle + Random.Range(30, 60);
+				if(a>20 && a<90)
+				{
+					position.y -= a;
+				}
 			}
 			else if(c == '[')
 			{
@@ -172,11 +220,44 @@ public class LSystem : Road {
 
 	}
 	
+//	public static Vector3 Intersect(Vector3 line1V1, Vector3 line1V2, Vector3 line2V1, Vector3 line2V2)
+//    {
+//        //Line1
+//        float A1 = line1V2.z - line1V1.z;
+//        float B1 = line1V2.x - line1V1.x;
+//        float C1 = A1*line1V1.x + B1*line1V1.z;
+//
+//        //Line2
+//        float A2 = line2V2.z - line2V1.z;
+//        float B2 = line2V2.x - line2V1.x;
+//        float C2 = A2 * line2V1.x + B2 * line2V1.z;
+//
+//        float det = A1*B2 - A2*B1;
+//        if (det == 0)
+//        {
+//            //return null;//parallel lines
+//        }
+//        else
+//        {
+//            float x = (B2*C1 - B1*C2)/det;
+//            float z = (A1 * C2 - A2 * C1) / det;
+//            return new Vector3(x,0,z);
+//        }
+//    }
+	
 	// Use this for initialization
 	void Start () {
-		
+		Terrain terrain = Terrain.activeTerrain;
+		TerrainData terrainData = terrain.terrainData;
+		Vector3 terrainSize = terrain.terrainData.size;
+		Debug.Log("Tx: "+terrainSize.x);
+		Debug.Log("Tz: "+terrainSize.z);
+		//float posx = Random.Range(-terrainSize.x, terrainSize.x);
+		//float posy = Random.Range(-terrainSize.z, terrainSize.z);
+		int posx = Random.Range(-500, 1500);
+		int posz = Random.Range(-500, 1500);
 		//road = gameObject.GetComponent<Road>();
-		LSystem lsystem = new LSystem("X",0,0,"F-[[X]+X]+FF[+FX]-X",3);
+		LSystem lsystem = new LSystem("X",0,0,"F-[[X]+X]+FF[+FX]-X",3, terrainSize);//"-[[-X]+X]+FF[+FX]-X", 4);//"F-[[X]+X]+FF[+FX]-X",4);
 		//LSystem lsystemScript = gameObject.GetComponent<LSystem>();
 		
 		
