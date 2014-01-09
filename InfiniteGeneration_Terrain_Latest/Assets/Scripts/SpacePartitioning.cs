@@ -29,20 +29,17 @@ public class SpacePartitioning : MonoBehaviour {
 			//finding random indexes of points from vertices list
 		 	index1 = Random.Range(0, verticesList.Length-1);
 		
-		 	while((index2 = Random.Range(0, verticesList.Length-1)) == index1) ;
-			//index1 = 2;
-			//index2 = 1;
+		 	//while((index2 = Random.Range(0, verticesList.Length-1)) == index1) ;
+			index2 = (index1 + 2) % verticesList.Length;
 			index3 = (index1+1)%verticesList.Length;
 			index4 = (index2+1)%verticesList.Length;
 			
 			//finding parametiric equation parameter t1
-		    float t1 = Random.Range(0.0f, 1.0f);	
-			t1 = .5f;
+		    float t1 = Random.Range(0.3f, .6f);
 			//finding first random point
 			Vector3 p1 = (1-t1)*verticesList[index1] + t1*verticesList[index3];
 			//finding parametiric equation parameter t
-		    float t2 = Random.Range(0.0f, 1.0f);
-			t2 = .5f;
+		    float t2 = Random.Range(0.3f, .6f);
 			//finding second random point
 			Vector3 p2 = (1-t2)*verticesList[index2] + t2*verticesList[index4];
 			

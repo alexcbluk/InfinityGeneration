@@ -30,7 +30,7 @@ public class RoadGenerator : MonoBehaviour {
 		if(length < 2)
 			return null;
 		
-		float halfMeshWidth = 1;
+		float halfMeshWidth = .5f;
 		float meshWidth = 2 * halfMeshWidth;
 		Vector3 v1, v2 = vertices2[1] - vertices2[0];
 		float meshLength1 = v2.magnitude;
