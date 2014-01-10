@@ -1,3 +1,4 @@
+//modified code for better partitioning (line 32) initial index not random, but always switches betwen 0 and 1, so there are no parallel lines like before
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;  // This is to use the List Collection
@@ -15,10 +16,10 @@ public class SpacePartitioning : MonoBehaviour {
 								new Vector3(0, 0, terrainSize.z),
 								new Vector3(terrainSize.x, 0, terrainSize.z),
 								new Vector3(terrainSize.x, 0, 0)};
-		Partition (pointsList, 4);
+		Partition (pointsList, 6,1);
 	}
 	
-	void Partition(Vector3[] verticesList, int counter)
+	void Partition(Vector3[] verticesList, int counter, int ind)
 	{
 		Vector3[] roadPoints = new Vector3[2];
 		int index1, index2, index3, index4;
@@ -27,8 +28,8 @@ public class SpacePartitioning : MonoBehaviour {
 		//while(counter>0)
 		//{
 			//finding random indexes of points from vertices list
-		 	index1 = Random.Range(0, verticesList.Length-1);
-		
+		 	//index1 = Random.Range(0, verticesList.Length-1);
+			index1 =  Mathf.Abs(1 - ind);//Random.Range(0, verticesList.Length-1);
 		 	//while((index2 = Random.Range(0, verticesList.Length-1)) == index1) ;
 			index2 = (index1 + 2) % verticesList.Length;
 			index3 = (index1+1)%verticesList.Length;
@@ -71,13 +72,13 @@ public class SpacePartitioning : MonoBehaviour {
 				collection1[i] = verticesList[(index3 + i - 1) % verticesList.Length];
 			}
 			collection1[collection1.Length - 1] = p2;
-		Partition (collection1, counter - 1);
+		Partition (collection1, counter - 1, index1);
 			for(int i = 1; i < collection2.Length - 1; i++)
 			{
 				collection2[i] = verticesList[(index4 + i - 1) % verticesList.Length];
 			}
 			collection2[collection2.Length - 1] = p1;
-			Partition (collection2, counter - 1);
+			Partition (collection2, counter - 1, index1);
 		
 		
 		
