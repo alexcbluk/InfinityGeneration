@@ -1,9 +1,17 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+<<<<<<< HEAD
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\RoadGenerator.cs">
     <Files>
       <File FileName="C:\Users\秋天\Desktop\InfiniteGeneration_Terrain_Latest\Assets\Scripts\InstantiateGameObject.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\RoadGenerator.cs" Line="6" Column="9" />
+=======
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\InstantiateGameObject.cs">
+    <Files>
+      <File FileName="Assets\Scripts\InstantiateGameObject.cs" Line="20" Column="46" />
+      <File FileName="Assets\Scripts\SpacePartitioning.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\CreateRoads.cs" Line="1" Column="1" />
+>>>>>>> 6991e8802a99de0cf0cd61fd19d7f5fa72f4a6ea
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

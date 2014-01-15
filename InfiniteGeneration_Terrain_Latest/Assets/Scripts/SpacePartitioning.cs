@@ -50,7 +50,7 @@
 		GetObjectSlots(out slots, num, padding, offset);
 
 		InstantiateGameObject ob = new InstantiateGameObject();
-		ob.InstantiateAllGameObject(slots, "Building");
+		ob.InstantiateAllGameObject(slots, "Tree");
 
 		}
 		
