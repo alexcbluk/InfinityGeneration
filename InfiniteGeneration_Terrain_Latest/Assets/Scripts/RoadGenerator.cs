@@ -3,7 +3,7 @@ using System.Collections;
 
 public class RoadGenerator : MonoBehaviour {
 
-	static Vector3 GetUprightVector(Vector3 v)
+	public static Vector3 GetUprightVector(Vector3 v)
 	{
 		float length = Vector3.Magnitude(v);
 		Vector3 v1 = new Vector3(v.z / length, 0, -v.x / length);

@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\CreateRoads.cs" />
      <Compile Include="Assets\Scripts\FixStupidEditorBehavior.cs" />
+     <Compile Include="Assets\Scripts\InstantiateGameObject.cs" />
      <Compile Include="Assets\Scripts\LSystem.cs" />
      <Compile Include="Assets\Scripts\MeshCombiner.cs" />
      <Compile Include="Assets\Scripts\PerlinNoise.cs" />
@@ -56,6 +57,7 @@
      <Compile Include="Assets\Scripts\RoadGenerator.cs" />
      <Compile Include="Assets\Scripts\SpacePartitioning.cs" />
      <Compile Include="Assets\Scripts\TerrainGeneration.cs" />
+     <Compile Include="Assets\Scripts\catmull.cs" />
      <None Include="Assets\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
  <Reference Include="Assembly-UnityScript-firstpass">
  <HintPath>Library\ScriptAssemblies\Assembly-UnityScript-firstpass.dll</HintPath>
