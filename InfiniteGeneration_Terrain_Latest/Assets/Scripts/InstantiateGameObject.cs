@@ -34,7 +34,10 @@ public class InstantiateGameObject
 						float randomWeight = Random.Range(0.0f, 1.0f);
 						//if (Type == "Building") {
 						if (randomWeight > 0.6 && randomWeight < 0.9) {	//30% chance to place building and 10% chance to leave empty	
-								MonoBehaviour.Instantiate (Resources.Load ("GameAssets/Building/skyscraper1") as GameObject, new Vector3 (position [i].x, position [i].y, position [i].z), Quaternion.identity);
+								GameObject ob = MonoBehaviour.Instantiate (Resources.Load ("GameAssets/Building/skyscraper1") as GameObject, new Vector3 (position [i].x, position [i].y, position [i].z), Quaternion.identity) as GameObject;
+								ob.transform.localPosition = position[i];
+								ob.transform.localRotation = Quaternion.AngleAxis(Random.Range(0, 360), new Vector3(0, 1, 0));
+								ob.transform.localScale = new Vector3(0.07f, Random.Range(.1f, .3f), .07f);
 
 						}
 						if (Type == "StreetLamp") {

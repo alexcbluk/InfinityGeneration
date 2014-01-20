@@ -49,7 +49,7 @@ public class SpacePartitioning : MonoBehaviour
 	List <Cell> listOfBuildingCells = new List<Cell> ();
 	List <Segment> listofSegments = new List<Segment>();
 	bool placeRoads;
-	float current_offset = 1.0f;
+	float current_offset = .2f;
 	
 	// Use this for initialization
 	void Start ()
@@ -290,8 +290,7 @@ public class SpacePartitioning : MonoBehaviour
 		Mesh mesh = RoadGenerator.GenerateRoadSegments (roadPoints, 10);
 		//Mesh mesh = MeshCombiner.CombineMesh(meshs);
 		GameObject road = new GameObject ("Road", typeof(MeshFilter), typeof(MeshRenderer));
-		current_offset -= .01f;
-		road.transform.position = new Vector3 (0, 0.1f, 0);
+		road.transform.position = new Vector3 (0, current_offset, 0);
 		
 		MeshFilter meshFilter = road.GetComponent<MeshFilter> ();
 		meshFilter.mesh = mesh;
