@@ -223,7 +223,7 @@ public class SpacePartitioning : MonoBehaviour
 		public void drawRoadMesh (Vector3[]roadPoints)
 		{
 			
-				Mesh mesh = RoadGenerator.GenerateRoadSegments (roadPoints);
+				Mesh mesh = RoadGenerator.GenerateRoadSegments (roadPoints, 10);
 				//Mesh mesh = MeshCombiner.CombineMesh(meshs);
 				GameObject road = new GameObject ("Road", typeof(MeshFilter), typeof(MeshRenderer));
 				road.transform.position = new Vector3 (0, .1f, 0);

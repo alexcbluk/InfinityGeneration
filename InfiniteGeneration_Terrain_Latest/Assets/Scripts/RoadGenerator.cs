@@ -12,7 +12,7 @@ public class RoadGenerator : MonoBehaviour {
 		return -v1;
 	}
 
-	public static Mesh GenerateRoadSegments(Vector3 [] vertices)
+	public static Mesh GenerateRoadSegments(Vector3 [] vertices, float scale)
 	{
 		if(vertices.Length < 2)
 			return null;
@@ -30,7 +30,7 @@ public class RoadGenerator : MonoBehaviour {
 		if(length < 2)
 			return null;
 		
-		float halfMeshWidth = .5f;
+		float halfMeshWidth = .5f * scale;
 		float meshWidth = 2 * halfMeshWidth;
 		Vector3 v1, v2 = vertices2[1] - vertices2[0];
 		float meshLength1 = v2.magnitude;
@@ -55,7 +55,7 @@ public class RoadGenerator : MonoBehaviour {
 		vertices1[0] = vertices2[0] + upright;
 		vertices1[1] = vertices2[0] + -upright;
 		uv[0] = new Vector2(0, 0);
-		uv[1] =	new Vector2(0, meshWidth);
+		uv[1] =	new Vector2(0, 1);
 		int index = 2;
 		float f = 0;
 		float currentU = 0;
@@ -91,7 +91,7 @@ public class RoadGenerator : MonoBehaviour {
 				float f3 = v3.sqrMagnitude - halfMeshWidth * halfMeshWidth;
 				if(Mathf.Abs(f3) < .000001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
 					f3 = 0;
-				f = Mathf.Sqrt(f3);
+				f = Mathf.Sqrt(f3) * 1 / scale;
 				currentU += meshLength + 2 * f;
 				u1 = currentU - 3 * f;
 				u2 = currentU - f;
@@ -104,7 +104,7 @@ public class RoadGenerator : MonoBehaviour {
 				float f3 = v3.sqrMagnitude - halfMeshWidth * halfMeshWidth;
 				if(Mathf.Abs(f3) < .000001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
 					f3 = 0;
-				f = Mathf.Sqrt(f3);
+				f = Mathf.Sqrt(f3) * 1 / scale;
 				currentU += meshLength + 2 * f;
 				u1 = currentU - f;
 				u2 = currentU - 3 * f;
@@ -113,7 +113,7 @@ public class RoadGenerator : MonoBehaviour {
 			}
 
 			vertices1[index] = vertices2[i + 1] + -v3;
-			uv[index++] = new Vector2(u1, meshWidth);
+			uv[index++] = new Vector2(u1, 1);
 			vertices1[index] = vertices2[i + 1] + v3;
 			uv[index++] = new Vector2(u2, 0);
 
@@ -128,22 +128,22 @@ public class RoadGenerator : MonoBehaviour {
 				vertices1[index] = vertices2[i + 1] + -v3;
 				uv[index++] = new Vector2(u4, 0);
 				vertices1[index] = vertices2[i + 1] + v3;
-				uv[index++] = new Vector2(u3, meshWidth);
+				uv[index++] = new Vector2(u3, 1);
 			}
 			else
 			{
 				vertices1[index] = vertices2[i + 1] + v3;
 				uv[index++] = new Vector2(u3, 0);
 				vertices1[index] = vertices2[i + 1] + -v3;
-				uv[index++] = new Vector2(u4, meshWidth);
+				uv[index++] = new Vector2(u4, 1);
 			}
 			upright = GetUprightVector(v2);
 			upright *= halfMeshWidth;
 		}
 		vertices1[index] = vertices2[i + 1] - upright;
-		uv[index++] = new Vector2(currentU + meshLength1, meshWidth); 
+		uv[index++] = new Vector2(currentU + meshLength1 * 1 / scale, 1); 
 		vertices1[index] = vertices2[i + 1] + upright;
-		uv[index] = new Vector2(currentU + meshLength1, 0);
+		uv[index] = new Vector2(currentU + meshLength1 * 1 / scale, 0);
 
 		Mesh mesh = new Mesh();
 		mesh.vertices = vertices1;

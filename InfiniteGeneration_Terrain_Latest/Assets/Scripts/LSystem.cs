@@ -95,7 +95,7 @@ public class LSystem : Road {
 		Mesh[] meshs = new Mesh[roadPositions.Count];
 		for(int i = 0; i < roadPositions.Count; i++)
 		{
-			meshs[i] = RoadGenerator.GenerateRoadSegments(roadPositions[i].ToArray());
+			meshs[i] = RoadGenerator.GenerateRoadSegments(roadPositions[i].ToArray(), 1);
 		}
 		Mesh mesh = MeshCombiner.CombineMesh(meshs);
 		GameObject road = new GameObject("Road", typeof(MeshFilter), typeof(MeshRenderer));
