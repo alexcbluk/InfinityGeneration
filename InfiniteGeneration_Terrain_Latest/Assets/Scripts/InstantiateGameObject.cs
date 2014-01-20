@@ -34,7 +34,7 @@ public class InstantiateGameObject
 						float randomWeight = Random.Range(0.0f, 1.0f);
 						//if (Type == "Building") {
 						if (randomWeight > 0.6 && randomWeight < 0.9) {	//30% chance to place building and 10% chance to leave empty	
-								MonoBehaviour.Instantiate (Resources.Load ("GameAssets/Building") as GameObject, new Vector3 (position [i].x, position [i].y, position [i].z), Quaternion.identity);
+								MonoBehaviour.Instantiate (Resources.Load ("GameAssets/Building/skyscraper1") as GameObject, new Vector3 (position [i].x, position [i].y, position [i].z), Quaternion.identity);
 
 						}
 						if (Type == "StreetLamp") {
@@ -43,7 +43,7 @@ public class InstantiateGameObject
 						}
 						//if (Type == "Tree") {
 						if (randomWeight <= 0.6) {//60% chance to get tree placed
-								MonoBehaviour.Instantiate (Resources.Load ("GameAssets/Tree") as GameObject, new Vector3 (position [i].x, position [i].y, position [i].z), Quaternion.identity);
+								MonoBehaviour.Instantiate (Resources.Load ("GameAssets/tree") as GameObject, new Vector3 (position [i].x, position [i].y, position [i].z), Quaternion.AngleAxis(-90, new Vector3(1, 0, 0)));
 	    		      
 						}
 				}

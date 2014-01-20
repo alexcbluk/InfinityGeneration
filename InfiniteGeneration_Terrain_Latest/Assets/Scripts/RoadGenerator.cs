@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class RoadGenerator : MonoBehaviour {
-
+	
 	public static Vector3 GetUprightVector(Vector3 v)
 	{
 		float length = Vector3.Magnitude(v);
@@ -11,7 +11,7 @@ public class RoadGenerator : MonoBehaviour {
 			return v1;
 		return -v1;
 	}
-
+	
 	public static Mesh GenerateRoadSegments(Vector3 [] vertices, float scale)
 	{
 		if(vertices.Length < 2)
@@ -55,7 +55,7 @@ public class RoadGenerator : MonoBehaviour {
 		vertices1[0] = vertices2[0] + upright;
 		vertices1[1] = vertices2[0] + -upright;
 		uv[0] = new Vector2(0, 0);
-		uv[1] =	new Vector2(0, 1);
+		uv[1] =        new Vector2(0, 1);
 		int index = 2;
 		float f = 0;
 		float currentU = 0;
@@ -111,12 +111,12 @@ public class RoadGenerator : MonoBehaviour {
 				u3 = currentU + f;
 				u4 = currentU - f;
 			}
-
+			
 			vertices1[index] = vertices2[i + 1] + -v3;
 			uv[index++] = new Vector2(u1, 1);
 			vertices1[index] = vertices2[i + 1] + v3;
 			uv[index++] = new Vector2(u2, 0);
-
+			
 			triangles[i * 6 + 6] = i * 4 + 4;
 			triangles[i * 6 + 7] = i * 4 + 5;
 			triangles[i * 6 + 8] = i * 4 + 6;
@@ -141,10 +141,10 @@ public class RoadGenerator : MonoBehaviour {
 			upright *= halfMeshWidth;
 		}
 		vertices1[index] = vertices2[i + 1] - upright;
-		uv[index++] = new Vector2(currentU + meshLength1 * 1 / scale, 1); 
+		uv[index++] = new Vector2(currentU + meshLength1 * 1 / scale, 1);
 		vertices1[index] = vertices2[i + 1] + upright;
 		uv[index] = new Vector2(currentU + meshLength1 * 1 / scale, 0);
-
+		
 		Mesh mesh = new Mesh();
 		mesh.vertices = vertices1;
 		mesh.triangles = triangles;
