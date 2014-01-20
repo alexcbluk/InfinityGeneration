@@ -31,11 +31,23 @@ public class Cell
 	public Vector3 v4_;
 }
 
+public class Segment{
+	public Segment(Vector3 s, Vector3 e)
+	{
+		segStart = s;
+		segEnd = e;
+	}
+	public Vector3 segStart;
+	public Vector3 segEnd;
+}
+
+
 public class SpacePartitioning : MonoBehaviour
 {
 	List <Pair> listOfPoints = new List<Pair> ();
 	List <Cell> listOfCells = new List<Cell> ();
 	List <Cell> listOfBuildingCells = new List<Cell> ();
+	List <Segment> listofSegments = new List<Segment>();
 	bool placeRoads;
 	float current_offset = 1.0f;
 	
@@ -126,7 +138,8 @@ public class SpacePartitioning : MonoBehaviour
 			
 		}
 		if (placeRoads) {
-			drawRoadMesh (roadPoints);
+			//drawRoadMesh (roadPoints);
+			curvedSegments(roadPoints); // Uses curve segments method
 		}
 		
 		Vector3 [] collection1;
@@ -220,6 +233,56 @@ public class SpacePartitioning : MonoBehaviour
 		}                        
 		
 	}
+
+	// creates the segment points for each road and curve it
+	public void curvedSegments(Vector3[]roadPoints) {
+		// Creates the two control points p1 and p2 (random positions) that is nessessary for controlling the curve
+		Vector3 findP1 = Vector3.Lerp(roadPoints[0], roadPoints[1], Random.Range (0.05f,0.45f));
+		Vector3 findP2 = Vector3.Lerp(roadPoints[1], roadPoints[0], Random.Range (0.05f,0.45f));
+		Vector3 p1 = new Vector3(findP1.x+(Random.Range (-30, 30)), findP1.y, findP1.z+(Random.Range (-30, 30)));
+		Vector3 p2 = new Vector3(findP2.x+(Random.Range (-30, 30)), findP2.y, findP2.z+(Random.Range (-30, 30)));
+		
+		// A temporary list that holds the segment points
+		List<Vector3> tempSegPoints = new List<Vector3>();
+		
+		// curveResolution determines the 'smoothness' of the road. The greater the number, the more smoother it is.
+		float curveResolution = 20;
+		// for loop to create the curve for each road
+		for (float j = 0; j <= curveResolution; j++) {
+			float t = j/curveResolution;
+			// Uses the CalculateBezierPoint function before storing it into tempSegPoints 
+			tempSegPoints.Add(CalculateBezierPoint(t, roadPoints[0], p1, p2, roadPoints[1]));
+		}
+		
+		// For each pass in the for loop, the curved segment points are stored in the 'listofSegments'
+		// Each element of the list holds the start and end positions of each segment
+		for (int k = 0; k < tempSegPoints.Count-1; k++){
+			listofSegments.Add (new Segment(tempSegPoints[k], tempSegPoints[k+1]));
+			Vector3[] segmentPoints = new Vector3[2];
+			segmentPoints[0] = tempSegPoints[k];
+			segmentPoints[1] = tempSegPoints[k+1];
+			drawRoadMesh(segmentPoints);
+		}
+		tempSegPoints.Clear();
+		
+		
+	}
+
+	Vector3 CalculateBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3){
+		float u = 1-t;
+		float tt = t*t;
+		float uu = u*u;
+		float uuu = uu * u;
+		float ttt = tt * t;
+		
+		// formula for cubic bezier - http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+		Vector3 p = uuu * p0; //first term (first part of formula), apply float calculation to point p0
+		p += 3 * uu * t * p1; //second term (append second part of formula to first), apply float calculation to point p1
+		p += 3 * u * tt * p2; //third term (append third part of formula to second and first), apply float calculation to point p2
+		p += ttt * p3; //fourth term (append fourth part of formula to third, second and first), apply float calculation to point p3
+		
+		return p; //return concatinated formula
+	}
 	
 	public void drawRoadMesh (Vector3[]roadPoints)
 	{
@@ -228,7 +291,7 @@ public class SpacePartitioning : MonoBehaviour
 		//Mesh mesh = MeshCombiner.CombineMesh(meshs);
 		GameObject road = new GameObject ("Road", typeof(MeshFilter), typeof(MeshRenderer));
 		current_offset -= .01f;
-		road.transform.position = new Vector3 (0, current_offset, 0);
+		road.transform.position = new Vector3 (0, 0.1f, 0);
 		
 		MeshFilter meshFilter = road.GetComponent<MeshFilter> ();
 		meshFilter.mesh = mesh;
