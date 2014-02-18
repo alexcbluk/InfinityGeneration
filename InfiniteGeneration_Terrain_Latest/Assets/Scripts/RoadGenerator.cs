@@ -71,13 +71,13 @@ public class RoadGenerator : MonoBehaviour {
 			//if(Mathf.Abs(Vector3.Dot(Vector3.Normalize(v1), Vector3.Normalize(v2))) > .999f)
 			bool turnUpsideDown = false;
 			//handle the case that two road segments are collinear
-			if(v3.magnitude < .000001f)
+			if(v3.magnitude < .00001f)
 			{
 				v3 = upright;
 			}
 			//handle the case generating the road segment in the direction of 180 degree
 			//this case causes the previous road segment to be overlapped. it doesn't make sense. don't do this.
-			else if(Vector3.Dot(Vector3.Normalize(v1), Vector3.Normalize(v2)) > .999f)
+			else if(Vector3.Dot(Vector3.Normalize(v1), Vector3.Normalize(v2)) > .99f)
 			{
 				v3 = upright;
 				turnUpsideDown = true;
@@ -89,10 +89,10 @@ public class RoadGenerator : MonoBehaviour {
 				v3 = -v3;
 				v3 *= halfMeshWidth / (Vector3.Dot(v3, upright));
 				float f3 = v3.sqrMagnitude - halfMeshWidth * halfMeshWidth;
-				if(Mathf.Abs(f3) < .000001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
+				if(Mathf.Abs(f3) < .00001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
 					f3 = 0;
 				f = Mathf.Sqrt(f3) * 1 / scale;
-				currentU += meshLength + 2 * f;
+				currentU += meshLength / scale + 2 * f;
 				u1 = currentU - 3 * f;
 				u2 = currentU - f;
 				u3 = currentU - f;
@@ -102,10 +102,10 @@ public class RoadGenerator : MonoBehaviour {
 			{
 				v3 *= halfMeshWidth / (Vector3.Dot(v3, upright));
 				float f3 = v3.sqrMagnitude - halfMeshWidth * halfMeshWidth;
-				if(Mathf.Abs(f3) < .000001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
+				if(Mathf.Abs(f3) < .00001)//There's a bug in Sqrt: if the argument is too close to zero, Sqrt will return a non-numerical value
 					f3 = 0;
 				f = Mathf.Sqrt(f3) * 1 / scale;
-				currentU += meshLength + 2 * f;
+				currentU += meshLength / scale + 2 * f;
 				u1 = currentU - f;
 				u2 = currentU - 3 * f;
 				u3 = currentU + f;
