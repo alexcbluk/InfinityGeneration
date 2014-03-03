@@ -15,6 +15,66 @@ public class Pair
 	public Vector3 end;
 }
 
+public class Curve
+{
+	public Curve (Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, float t0, float t1)
+	{
+		v1_ = v1;
+		v2_ = v2;
+		v3_ = v3;
+		v4_ = v4;
+		t0_ = t0;
+		t1_ = t1;
+		if(t0 > t1)
+			t0 = t0;
+	}
+
+	public float GetRandomT()
+	{
+		float t = Random.Range (0.6f, .6f);
+		return t0_ * (1 - t) + t1_ * t;
+	}
+
+	public Vector3 GetT0()
+	{
+		return CalculateBezierPoint(t0_, v1_, v2_, v3_, v4_); 
+	}
+
+	public Vector3 GetT1()
+	{
+		return CalculateBezierPoint(t1_, v1_, v2_, v3_, v4_); 
+	}
+
+	public Vector3 GetPoint(float t)
+	{
+		return CalculateBezierPoint(t, v1_, v2_, v3_, v4_); 
+	}
+
+	public static Vector3 CalculateBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3){
+		float u = 1-t;
+		float tt = t*t;
+		float uu = u*u;
+		float uuu = uu * u;
+		float ttt = tt * t;
+		
+		// formula for cubic bezier - http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+		Vector3 p = uuu * p0; //first term (first part of formula), apply float calculation to point p0
+		p += 3 * uu * t * p1; //second term (append second part of formula to first), apply float calculation to point p1
+		p += 3 * u * tt * p2; //third term (append third part of formula to second and first), apply float calculation to point p2
+		p += ttt * p3; //fourth term (append fourth part of formula to third, second and first), apply float calculation to point p3
+		
+		return p; //return concatinated formula
+	}
+	
+	public Vector3 v1_;
+	public Vector3 v2_;
+	public Vector3 v3_;
+	public Vector3 v4_;
+	public float t0_;
+	public float t1_;
+}
+
+
 public class Cell
 {
 	public Cell (Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
@@ -50,6 +110,14 @@ public class SpacePartitioning : MonoBehaviour
 	List <Segment> listofSegments = new List<Segment>();
 	bool placeRoads;
 	float current_offset = .2f;
+
+	Vector3[] GenerateBezierControlPoints(Vector3 start, Vector3 end)
+	{
+		Vector3 findP1 = Vector3.Lerp(start, end, Random.Range (0.05f,0.45f));
+		Vector3 findP2 = Vector3.Lerp(end, start, Random.Range (0.05f,0.45f));
+		Vector3 [] controlPoints = {new Vector3(findP1.x+(Random.Range (-30, 30)), findP1.y, findP1.z+(Random.Range (-30, 30))), new Vector3(findP2.x+(Random.Range (-30, 30)), findP2.y, findP2.z+(Random.Range (-30, 30)))};
+		return controlPoints;
+	}
 	
 	// Use this for initialization
 	void Start ()
@@ -62,8 +130,18 @@ public class SpacePartitioning : MonoBehaviour
 			new Vector3 (0, 0, terrainSize.z),
 			new Vector3 (terrainSize.x, 0, terrainSize.z),
 			new Vector3 (terrainSize.x, 0, 0)};
+		Vector3 [] controlPoints0 = GenerateBezierControlPoints(pointsList[0], pointsList[1]);
+		Vector3 [] controlPoints1 = GenerateBezierControlPoints(pointsList[1], pointsList[2]);
+		Vector3 [] controlPoints2 = GenerateBezierControlPoints(pointsList[2], pointsList[3]);
+		Vector3 [] controlPoints3 = GenerateBezierControlPoints(pointsList[3], pointsList[0]);
+		Curve [] curves = {
+			new Curve(pointsList[0], controlPoints0[0], controlPoints0[1], pointsList[1], 0, 1),
+			new Curve(pointsList[1], controlPoints1[0], controlPoints1[1], pointsList[2], 0, 1),
+			new Curve(pointsList[2], controlPoints2[0], controlPoints2[1], pointsList[3], 0, 1),
+			new Curve(pointsList[3], controlPoints3[0], controlPoints3[1], pointsList[0], 0, 1)
+		};
 		placeRoads = true;
-		Partition (pointsList, 7, 1);
+		PartitionForCurve(curves, 7, 1);
 		placeRoads = false;
 		Vector3 [] cell = new Vector3[4];
 		for (int i = 0; i < listOfCells.Count; i++) {
@@ -88,6 +166,68 @@ public class SpacePartitioning : MonoBehaviour
 		
 	}
 	
+	void PartitionForCurve (Curve[] CurveList, int counter, int ind)
+	{
+		Vector3[] roadPoints = new Vector3[2];
+		Vector3[] roadPointsDivided = new Vector3[2];
+		int index1, index2, index3, index4;
+		if (counter == 0) {
+			listOfCells.Add (new Cell (CurveList[0].GetT0(), CurveList[1].GetT0(), CurveList[2].GetT0(), CurveList[3].GetT0()));
+			return;
+		}
+		//finding random indexes of points from vertices list
+		index1 = 1 - ind;
+		index2 = index1 + 2;
+		index3 = index1 + 1;
+		index4 = index2 + 1;
+		
+		float t1 = CurveList[index1].GetRandomT();
+		float t2 = CurveList[index2].GetRandomT();
+		//finding first random point
+		Vector3 p1 = CurveList[index1].GetPoint(t1);
+		//finding second random point
+		Vector3 p2 = CurveList[index2].GetPoint(t2);
+		
+		//draw road segment
+		roadPoints [0] = p1;
+		roadPoints [1] = p2;
+		
+		//add 4 line segments to the list
+		if (counter < 3 && placeRoads) {
+			//        /*
+			listOfPoints.Add (new Pair (CurveList [index1].GetT0(), p1));
+			listOfPoints.Add (new Pair (p1, CurveList [index3].GetT1()));
+			
+			listOfPoints.Add (new Pair (CurveList [index2].GetT0(), p2));
+			listOfPoints.Add (new Pair (p2, CurveList [index4 % 4].GetT1()));
+			//        */
+		}
+		if (counter == 1 && placeRoads) {
+			listOfPoints.Add (new Pair (p1, p2));
+			
+		}
+		
+		Curve [] collection1 = new Curve [4];
+		Curve [] collection2 = new Curve [4];
+		
+		Vector3 [] controlPoints = GenerateBezierControlPoints(p2, p1);
+		collection1 [0] = new Curve(CurveList[index1].v1_, CurveList[index1].v2_, CurveList[index1].v3_, CurveList[index1].v4_, t1, CurveList[index1].t1_);
+		collection1 [1] = CurveList[index3];
+		collection1 [2] = new Curve(CurveList[index2].v1_, CurveList[index2].v2_, CurveList[index2].v3_, CurveList[index2].v4_, CurveList[index2].t0_, t2);
+		collection1 [3] = new Curve(p2, controlPoints[0], controlPoints[1], p1, 0, 1);
+		collection2 [0] = new Curve(CurveList[index2].v1_, CurveList[index2].v2_, CurveList[index2].v3_, CurveList[index2].v4_, t2, CurveList[index2].t1_);
+		collection2 [1] = CurveList[index4 % 4];
+ 		collection2 [2] = new Curve(CurveList[index1].v1_, CurveList[index1].v2_, CurveList[index1].v3_, CurveList[index1].v4_, CurveList[index1].t0_, t1);
+		collection2 [3] = new Curve(p1, controlPoints[1], controlPoints[0], p2, 0, 1);
+		PartitionForCurve (collection1, counter - 1, index1);
+		PartitionForCurve (collection2, counter - 1, index1);
+		Vector3 [] curvePoints = {p1, controlPoints[1], controlPoints[0], p2};
+		if (placeRoads) {
+			//drawRoadMesh (roadPoints);
+			curvedSegments(curvePoints); // Uses curve segments method
+		}
+	}
+
 	void Partition (Vector3[] verticesList, int counter, int ind)
 	{
 		Vector3[] roadPoints = new Vector3[2];
@@ -236,12 +376,6 @@ public class SpacePartitioning : MonoBehaviour
 
 	// creates the segment points for each road and curve it
 	public void curvedSegments(Vector3[]roadPoints) {
-		// Creates the two control points p1 and p2 (random positions) that is nessessary for controlling the curve
-		Vector3 findP1 = Vector3.Lerp(roadPoints[0], roadPoints[1], Random.Range (0.05f,0.45f));
-		Vector3 findP2 = Vector3.Lerp(roadPoints[1], roadPoints[0], Random.Range (0.05f,0.45f));
-		Vector3 p1 = new Vector3(findP1.x+(Random.Range (-30, 30)), findP1.y, findP1.z+(Random.Range (-30, 30)));
-		Vector3 p2 = new Vector3(findP2.x+(Random.Range (-30, 30)), findP2.y, findP2.z+(Random.Range (-30, 30)));
-		
 		// A temporary list that holds the segment points
 		List<Vector3> tempSegPoints = new List<Vector3>();
 		
@@ -251,9 +385,10 @@ public class SpacePartitioning : MonoBehaviour
 		for (float j = 0; j <= curveResolution; j++) {
 			float t = j/curveResolution;
 			// Uses the CalculateBezierPoint function before storing it into tempSegPoints 
-			tempSegPoints.Add(CalculateBezierPoint(t, roadPoints[0], p1, p2, roadPoints[1]));
+			tempSegPoints.Add(Curve.CalculateBezierPoint(t, roadPoints[0], roadPoints[1], roadPoints[2], roadPoints[3]));
 		}
-		
+		drawRoadMesh(tempSegPoints.ToArray());
+		/*
 		// For each pass in the for loop, the curved segment points are stored in the 'listofSegments'
 		// Each element of the list holds the start and end positions of each segment
 		for (int k = 0; k < tempSegPoints.Count-1; k++){
@@ -263,27 +398,12 @@ public class SpacePartitioning : MonoBehaviour
 			segmentPoints[1] = tempSegPoints[k+1];
 			drawRoadMesh(segmentPoints);
 		}
+		//*/
 		tempSegPoints.Clear();
 		
 		
 	}
 
-	Vector3 CalculateBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3){
-		float u = 1-t;
-		float tt = t*t;
-		float uu = u*u;
-		float uuu = uu * u;
-		float ttt = tt * t;
-		
-		// formula for cubic bezier - http://en.wikipedia.org/wiki/B%C3%A9zier_curve
-		Vector3 p = uuu * p0; //first term (first part of formula), apply float calculation to point p0
-		p += 3 * uu * t * p1; //second term (append second part of formula to first), apply float calculation to point p1
-		p += 3 * u * tt * p2; //third term (append third part of formula to second and first), apply float calculation to point p2
-		p += ttt * p3; //fourth term (append fourth part of formula to third, second and first), apply float calculation to point p3
-		
-		return p; //return concatinated formula
-	}
-	
 	public void drawRoadMesh (Vector3[]roadPoints)
 	{
 		
