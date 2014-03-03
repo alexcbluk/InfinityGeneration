@@ -25,13 +25,11 @@ public class Curve
 		v4_ = v4;
 		t0_ = t0;
 		t1_ = t1;
-		if(t0 > t1)
-			t0 = t0;
 	}
 
 	public float GetRandomT()
 	{
-		float t = Random.Range (0.6f, .6f);
+		float t = Random.Range (.3f, .6f);
 		return t0_ * (1 - t) + t1_ * t;
 	}
 
