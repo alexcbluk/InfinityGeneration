@@ -46,13 +46,18 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Base Scripts\MeshBuilder.cs" />
+     <Compile Include="Assets\Scripts\Base Scripts\ProceduralBase.cs" />
      <Compile Include="Assets\Scripts\CreateRoads.cs" />
+     <Compile Include="Assets\Scripts\DiamondSquare.cs" />
      <Compile Include="Assets\Scripts\FixStupidEditorBehavior.cs" />
      <Compile Include="Assets\Scripts\InstantiateGameObject.cs" />
+     <Compile Include="Assets\Scripts\InstantiateProceduralObjects.cs" />
      <Compile Include="Assets\Scripts\LSystem.cs" />
      <Compile Include="Assets\Scripts\MeshCombiner.cs" />
      <Compile Include="Assets\Scripts\PerlinNoise.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
+     <Compile Include="Assets\Scripts\ProcTerrain.cs" />
      <Compile Include="Assets\Scripts\Road.cs" />
      <Compile Include="Assets\Scripts\RoadGenerator.cs" />
      <Compile Include="Assets\Scripts\SpacePartitioning.cs" />
