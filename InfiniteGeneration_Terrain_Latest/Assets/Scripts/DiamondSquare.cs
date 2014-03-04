@@ -17,18 +17,28 @@ public class Point
 }
 
 public class DiamondSquare : ProceduralBase {
-
-	public static int terrainSize = 2;
+	
+	public static int terrainSize = 16;
 	public float[,] heightMap = new float[terrainSize,terrainSize];
 	public float[] currentHeights;
 	public float startingHeight = 1;
+	public int heightIncrement = 50;
 	//Vector3 point1,point2,point3,point4;		
-
+	
 	//Create a new mesh builder:
 	MeshBuilder meshBuilder = new MeshBuilder();
 	
 	// Use this for initialization
-	void Start () {
+	//void Start () {
+		//currentHeights = new float[4]{1,1,1,1};
+		//DiamondSquareAlgorithm(0, 0, terrainSize);
+		//SampleHeightMap(0.49f, 1.0f);
+	//}
+
+	public void initializeDiamondSquare(int s)
+	{
+		//terrainSize = s;
+		//heightMap = new float[terrainSize,terrainSize];
 		currentHeights = new float[4]{1,1,1,1};
 		DiamondSquareAlgorithm(0, 0, terrainSize);
 		SampleHeightMap(0.49f, 1.0f);
@@ -38,7 +48,7 @@ public class DiamondSquare : ProceduralBase {
 	void Update () {
 		
 	}
-
+	
 	public float SampleHeightMap(float x, float z)
 	{
 		float length = 1.0f / terrainSize;
@@ -57,19 +67,19 @@ public class DiamondSquare : ProceduralBase {
 			indexX1 = terrainSize - 1;
 		if(indexZ1 >= terrainSize)
 			indexZ1 = terrainSize - 1;
-		float v0 = heightMap[indexX, indexZ] * (1 - offsetX) + heightMap[indexX + 1, indexZ] * offsetX;
-		float v1 = heightMap[indexX, indexZ1] * (1 - offsetX) + heightMap[indexX + 1, indexZ1] * offsetX;
+		float v0 = heightMap[indexX, indexZ] * (1 - offsetX) + heightMap[indexX1, indexZ] * offsetX;
+		float v1 = heightMap[indexX, indexZ1] * (1 - offsetX) + heightMap[indexX1, indexZ1] * offsetX;
 		float v2 = v0 * (1 - offsetZ) + v1 * offsetZ;
 		return v2;
 		//*/
 	}
-
+	
 	//Build the mesh:
 	public override Mesh BuildMesh()
 	{
 		currentHeights = new float[4]{10,10,10,10};
 		//DiamondSquareAlgorithm(4,0, 0, 128, 128);
-
+		
 		//create the Unity mesh:
 		Mesh mesh = meshBuilder.CreateMesh();
 		
@@ -84,10 +94,10 @@ public class DiamondSquare : ProceduralBase {
 		
 		MeshCollider meshcollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
 		meshcollider.sharedMesh = mesh;
-
+		
 		return mesh;
 	}
-
+	
 	/*
 	void createTerrain(Vector3 offset, int segCount){
 		//Create a new mesh builder:
@@ -98,7 +108,7 @@ public class DiamondSquare : ProceduralBase {
 		BuildQuadForGrid(meshBuilder, offset, uv, buildTriangles, segCount);
 	}
 	*/
-		
+	
 	public void DiamondSquareAlgorithm(int startX, int startZ, int length) 
 	{
 		if(length == 0){
@@ -109,39 +119,39 @@ public class DiamondSquare : ProceduralBase {
 		float h2 = currentHeights[1];
 		float h3 = currentHeights[2];
 		float h4 = currentHeights[3];
-
+		
 		Point point1 = new Point(startX, h1,startZ);
 		Point point2 = new Point(startX, h2,startZ + length);
 		Point point3 = new Point(startX + length, h3,startZ + length);
 		Point point4 = new Point(startX + length, h4,startZ);
-
+		
 		Point midpoint;
-
+		
 		float sideMidPoint1 =0;
 		float sideMidPoint2 =0;
 		float sideMidPoint3 =0;
 		float sideMidPoint4 =0;
-
-
+		
+		
 		//Finding the midpoint from Point 1 and 3
 		midpoint = new Point(startX + length / 2, 0, startZ + length / 2);
 		//Midpoint.y is the average of the 4 points
 		midpoint.y = (point1.y + point2.y + point3.y + point4.y) / 4;
-
+		
 		//randomise height of the midpoint(s)
-		midpoint.y += (float)Random.Range(100, -100);
-		sideMidPoint1 += (float)Random.Range(100, -100);
-		sideMidPoint2 += (float)Random.Range(100, -100);
-		sideMidPoint3 += (float)Random.Range(100, -100);
-		sideMidPoint4 += (float)Random.Range(100, -100);
-	
+		midpoint.y += (float)Random.Range(heightIncrement, -heightIncrement);
+		sideMidPoint1 += (float)Random.Range(heightIncrement, -heightIncrement);
+		sideMidPoint2 += (float)Random.Range(heightIncrement, -heightIncrement);
+		sideMidPoint3 += (float)Random.Range(heightIncrement, -heightIncrement);
+		sideMidPoint4 += (float)Random.Range(heightIncrement, -heightIncrement);
+		
 		if(length == 1){
-
+			
 			heightMap[point1.x, point1.z] = point1.y;
 			//BuildQuad(meshBuilder, point1,point2,point3,point4);
 			Debug.Log("Blah");
 		}
-
+		
 		//recursively call Partitioning
 		//p1
 		currentHeights[0] = h1;

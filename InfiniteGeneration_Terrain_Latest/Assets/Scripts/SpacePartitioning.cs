@@ -118,11 +118,12 @@ public class SpacePartitioning : MonoBehaviour
 	}
 	
 	// Use this for initialization
-	void Start ()
+	public void initializeSpacePartitioning (float mWidth, float mLength)
 	{
-		Terrain terrain = Terrain.activeTerrain;
-		TerrainData terrainData = terrain.terrainData;
-		Vector3 terrainSize = terrain.terrainData.size;
+		//Terrain terrain = Terrain.activeTerrain;
+		//TerrainData terrainData = terrain.terrainData;
+		//Vector3 terrainSize = terrain.terrainData.size;
+		Vector3 terrainSize = new Vector3(mWidth, 0, mLength);
 		Vector3[] pointsList = {
 			new Vector3 (0, 0, 0),
 			new Vector3 (0, 0, terrainSize.z),

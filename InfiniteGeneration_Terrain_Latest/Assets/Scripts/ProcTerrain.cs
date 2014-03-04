@@ -21,40 +21,43 @@ using System.Collections;
 public class ProcTerrain : ProceduralBase
 {
 	//The width and length of each segment:
-	public float meshWidth = 1.0f;
-	public float meshLength = 1.0f;
+	public int meshWidth = 10;
+	public int meshLength = 10;
 
 	//The maximum height of the mesh:
-	public float meshHeight = 1.0f;
+	public float meshHeight = 0.0f;
 
 	//The number of segments in each dimension (the plane will be m_SegmentCount * m_SegmentCount in area):
-	public int meshSegmentCount = 128;
+	public int meshSegmentCount = 180;
+	 
 
 	//Build the mesh:
 	public override Mesh BuildMesh()
 	{
 		#region Not needed
-
 		//Create a new mesh builder:
 		MeshBuilder meshBuilder = new MeshBuilder();
-		
+		int sizeOfTerrain = meshWidth*meshSegmentCount;
+
+		DiamondSquare ds = new DiamondSquare();
+		ds.initializeDiamondSquare(meshWidth*meshSegmentCount);
 		//Changing the height map
 		//Loop through the rows:
 		for (int i = 0; i <= meshSegmentCount; i++)
 		{
 			//incremented values for the Z position and V coordinate:
-			float z = meshLength * i;
+			float z = (float)meshLength * i;
 			float v = (1.0f / meshSegmentCount) * i;
 
 			//Loop through the collumns:
 			for (int j = 0; j <= meshSegmentCount; j++)
 			{
 				//incremented values for the X position and U coordinate:
-				float x = meshWidth * j;
+				float x = (float)meshWidth * j;
 				float u = (1.0f / meshSegmentCount) * j;
 
 				//The position offset for this quad, with a random height between zero and m_MaxHeight:
-				Vector3 offset = new Vector3(x, Random.Range(0.0f, meshHeight/2), z);
+				Vector3 offset = new Vector3(x, ds.SampleHeightMap(x/sizeOfTerrain, z/sizeOfTerrain), z);
 
 				//build quads that share vertices:
 				Vector2 uv = new Vector2(u, v);
@@ -82,7 +85,8 @@ public class ProcTerrain : ProceduralBase
 		meshcollider.sharedMesh = mesh;
 
 
-
+		SpacePartitioning sp = new SpacePartitioning();
+		sp.initializeSpacePartitioning(meshWidth*meshSegmentCount, meshLength*meshSegmentCount);
 
 
 		//return the new mesh:
