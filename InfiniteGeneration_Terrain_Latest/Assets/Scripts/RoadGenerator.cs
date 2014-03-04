@@ -53,7 +53,10 @@ public class RoadGenerator : MonoBehaviour {
 			normals[i] = Vector3.up;
 		};
 		vertices1[0] = vertices2[0] + upright;
+		float offset = 6.5f;
+		vertices1[0].y = DiamondSquare.SampleHeightMap(vertices1[0].x / ProcTerrain.sizeOfTerrain, vertices1[0].z / ProcTerrain.sizeOfTerrain) + offset;
 		vertices1[1] = vertices2[0] + -upright;
+		vertices1[1].y = DiamondSquare.SampleHeightMap(vertices1[1].x / ProcTerrain.sizeOfTerrain, vertices1[1].z / ProcTerrain.sizeOfTerrain) + offset;
 		uv[0] = new Vector2(0, 0);
 		uv[1] =        new Vector2(0, 1);
 		int index = 2;
@@ -113,8 +116,10 @@ public class RoadGenerator : MonoBehaviour {
 			}
 			
 			vertices1[index] = vertices2[i + 1] + -v3;
+			vertices1[index].y = DiamondSquare.SampleHeightMap(vertices1[index].x / ProcTerrain.sizeOfTerrain, vertices1[index].z / ProcTerrain.sizeOfTerrain) + offset;
 			uv[index++] = new Vector2(u1, 1);
 			vertices1[index] = vertices2[i + 1] + v3;
+			vertices1[index].y = DiamondSquare.SampleHeightMap(vertices1[index].x / ProcTerrain.sizeOfTerrain, vertices1[index].z / ProcTerrain.sizeOfTerrain) + offset;
 			uv[index++] = new Vector2(u2, 0);
 			
 			triangles[i * 6 + 6] = i * 4 + 4;
@@ -126,23 +131,29 @@ public class RoadGenerator : MonoBehaviour {
 			if(turnUpsideDown)
 			{
 				vertices1[index] = vertices2[i + 1] + -v3;
+				vertices1[index].y = DiamondSquare.SampleHeightMap(vertices1[index].x / ProcTerrain.sizeOfTerrain, vertices1[index].z / ProcTerrain.sizeOfTerrain) + offset;
 				uv[index++] = new Vector2(u4, 0);
 				vertices1[index] = vertices2[i + 1] + v3;
+				vertices1[index].y = DiamondSquare.SampleHeightMap(vertices1[index].x / ProcTerrain.sizeOfTerrain, vertices1[index].z / ProcTerrain.sizeOfTerrain) + offset;
 				uv[index++] = new Vector2(u3, 1);
 			}
 			else
 			{
 				vertices1[index] = vertices2[i + 1] + v3;
+				vertices1[index].y = DiamondSquare.SampleHeightMap(vertices1[index].x / ProcTerrain.sizeOfTerrain, vertices1[index].z / ProcTerrain.sizeOfTerrain) + offset;
 				uv[index++] = new Vector2(u3, 0);
 				vertices1[index] = vertices2[i + 1] + -v3;
+				vertices1[index].y = DiamondSquare.SampleHeightMap(vertices1[index].x / ProcTerrain.sizeOfTerrain, vertices1[index].z / ProcTerrain.sizeOfTerrain) + offset;
 				uv[index++] = new Vector2(u4, 1);
 			}
 			upright = GetUprightVector(v2);
 			upright *= halfMeshWidth;
 		}
 		vertices1[index] = vertices2[i + 1] - upright;
+		vertices1[index].y = DiamondSquare.SampleHeightMap(vertices1[index].x / ProcTerrain.sizeOfTerrain, vertices1[index].z / ProcTerrain.sizeOfTerrain) + offset;
 		uv[index++] = new Vector2(currentU + meshLength1 * 1 / scale, 1);
 		vertices1[index] = vertices2[i + 1] + upright;
+		vertices1[index].y = DiamondSquare.SampleHeightMap(vertices1[index].x / ProcTerrain.sizeOfTerrain, vertices1[index].z / ProcTerrain.sizeOfTerrain) + offset;
 		uv[index] = new Vector2(currentU + meshLength1 * 1 / scale, 0);
 		
 		Mesh mesh = new Mesh();

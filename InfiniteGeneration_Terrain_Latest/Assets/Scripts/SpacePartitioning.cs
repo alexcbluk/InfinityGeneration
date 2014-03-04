@@ -379,7 +379,7 @@ public class SpacePartitioning : MonoBehaviour
 		List<Vector3> tempSegPoints = new List<Vector3>();
 		
 		// curveResolution determines the 'smoothness' of the road. The greater the number, the more smoother it is.
-		float curveResolution = 20;
+		float curveResolution = 100;
 		// for loop to create the curve for each road
 		for (float j = 0; j <= curveResolution; j++) {
 			float t = j/curveResolution;

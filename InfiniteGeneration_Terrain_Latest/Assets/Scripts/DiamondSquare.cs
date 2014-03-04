@@ -18,29 +18,27 @@ public class Point
 
 public class DiamondSquare : ProceduralBase {
 	
-	public static int terrainSize = 16;
-	public float[,] heightMap = new float[terrainSize,terrainSize];
-	public float[] currentHeights;
-	public float startingHeight = 1;
-	public int heightIncrement = 50;
+	public static int mapSize = 16;
+	static public float[,] heightMap = new float[mapSize,mapSize];
+	static public float[] currentHeights;
+	static public float startingHeight = 1;
+	static public int heightIncrement = 50;
 	//Vector3 point1,point2,point3,point4;		
 	
-	//Create a new mesh builder:
-	MeshBuilder meshBuilder = new MeshBuilder();
 	
 	// Use this for initialization
 	//void Start () {
 		//currentHeights = new float[4]{1,1,1,1};
-		//DiamondSquareAlgorithm(0, 0, terrainSize);
+		//DiamondSquareAlgorithm(0, 0, mapSize);
 		//SampleHeightMap(0.49f, 1.0f);
 	//}
 
-	public void initializeDiamondSquare(int s)
+	static public void initializeDiamondSquare(int s)
 	{
-		//terrainSize = s;
-		//heightMap = new float[terrainSize,terrainSize];
+		//mapSize = s;
+		//heightMap = new float[mapSize,mapSize];
 		currentHeights = new float[4]{1,1,1,1};
-		DiamondSquareAlgorithm(0, 0, terrainSize);
+		DiamondSquareAlgorithm(0, 0, mapSize);
 		SampleHeightMap(0.49f, 1.0f);
 	}
 	
@@ -49,53 +47,33 @@ public class DiamondSquare : ProceduralBase {
 		
 	}
 	
-	public float SampleHeightMap(float x, float z)
+	static public float SampleHeightMap(float x, float z)
 	{
-		float length = 1.0f / terrainSize;
+		if(x < 0)
+			x = 0;
+		if(z < 0)
+			z = 0;
+		float length = 1.0f / mapSize;
 		int indexX = (int)(x / length);
 		int indexZ = (int)(z / length);
-		if(indexX >= terrainSize)
-			indexX = terrainSize - 1;
-		if(indexZ >= terrainSize)
-			indexZ = terrainSize - 1;
+		if(indexX >= mapSize)
+			indexX = mapSize - 1;
+		if(indexZ >= mapSize)
+			indexZ = mapSize - 1;
 		///*
 		float offsetX = (x - indexX * length) / length;
 		float offsetZ = (z - indexZ * length) / length;
 		int indexX1 = indexX + 1;
 		int indexZ1 = indexZ + 1;
-		if(indexX1 >= terrainSize)
-			indexX1 = terrainSize - 1;
-		if(indexZ1 >= terrainSize)
-			indexZ1 = terrainSize - 1;
+		if(indexX1 >= mapSize)
+			indexX1 = mapSize - 1;
+		if(indexZ1 >= mapSize)
+			indexZ1 = mapSize - 1;
 		float v0 = heightMap[indexX, indexZ] * (1 - offsetX) + heightMap[indexX1, indexZ] * offsetX;
 		float v1 = heightMap[indexX, indexZ1] * (1 - offsetX) + heightMap[indexX1, indexZ1] * offsetX;
 		float v2 = v0 * (1 - offsetZ) + v1 * offsetZ;
 		return v2;
 		//*/
-	}
-	
-	//Build the mesh:
-	public override Mesh BuildMesh()
-	{
-		currentHeights = new float[4]{10,10,10,10};
-		//DiamondSquareAlgorithm(4,0, 0, 128, 128);
-		
-		//create the Unity mesh:
-		Mesh mesh = meshBuilder.CreateMesh();
-		
-		//have the mesh calculate its own normals:
-		mesh.RecalculateNormals();
-		
-		MeshFilter meshFilter = gameObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
-		meshFilter.mesh = mesh;
-		
-		MeshRenderer meshRenderer = gameObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-		meshRenderer.material.mainTexture = Resources.Load("Terrain/Grass&Rock") as Texture;
-		
-		MeshCollider meshcollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
-		meshcollider.sharedMesh = mesh;
-		
-		return mesh;
 	}
 	
 	/*
@@ -109,7 +87,12 @@ public class DiamondSquare : ProceduralBase {
 	}
 	*/
 	
-	public void DiamondSquareAlgorithm(int startX, int startZ, int length) 
+	public override Mesh BuildMesh()
+	{
+		return null;
+	}
+
+	static public void DiamondSquareAlgorithm(int startX, int startZ, int length) 
 	{
 		if(length == 0){
 			return;

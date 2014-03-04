@@ -24,6 +24,8 @@ public class ProcTerrain : ProceduralBase
 	public int meshWidth = 10;
 	public int meshLength = 10;
 
+	static public float sizeOfTerrain;
+
 	//The maximum height of the mesh:
 	public float meshHeight = 0.0f;
 
@@ -37,10 +39,9 @@ public class ProcTerrain : ProceduralBase
 		#region Not needed
 		//Create a new mesh builder:
 		MeshBuilder meshBuilder = new MeshBuilder();
-		int sizeOfTerrain = meshWidth*meshSegmentCount;
+		sizeOfTerrain = meshWidth*meshSegmentCount;
 
-		DiamondSquare ds = new DiamondSquare();
-		ds.initializeDiamondSquare(meshWidth*meshSegmentCount);
+		DiamondSquare.initializeDiamondSquare(meshWidth*meshSegmentCount);
 		//Changing the height map
 		//Loop through the rows:
 		for (int i = 0; i <= meshSegmentCount; i++)
@@ -57,7 +58,7 @@ public class ProcTerrain : ProceduralBase
 				float u = (1.0f / meshSegmentCount) * j;
 
 				//The position offset for this quad, with a random height between zero and m_MaxHeight:
-				Vector3 offset = new Vector3(x, ds.SampleHeightMap(x/sizeOfTerrain, z/sizeOfTerrain), z);
+				Vector3 offset = new Vector3(x, DiamondSquare.SampleHeightMap(x/sizeOfTerrain, z/sizeOfTerrain), z);
 
 				//build quads that share vertices:
 				Vector2 uv = new Vector2(u, v);
