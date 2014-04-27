@@ -106,11 +106,13 @@ public class SpacePartitioning : MonoBehaviour
 		List <Pair> listOfPoints = new List<Pair> ();
 		List <Cell> listOfCells = new List<Cell> ();
 		List <Cell> listOfBuildingCells = new List<Cell> ();
+		List <Cell> listOfPavementCells = new List<Cell> ();
 		List <Segment> listofSegments = new List<Segment> ();
 		Vector3 terrainSize;
 		bool placeRoads;
 		bool placeLamps = true;
 		float current_offset = -5.8f;
+		float scale_factor;
 
 		//Tidy Up:
 		GameObject roadContainer = new GameObject ("Roads");
@@ -150,19 +152,58 @@ public class SpacePartitioning : MonoBehaviour
 			new Curve (pointsList [3], controlPoints3 [0], controlPoints3 [1], pointsList [0], 0, 1)
 		};
 				placeRoads = true;
-				PartitionForCurve (curves, 7, 1);
+				PartitionForCurve (curves, 6, 1);
 				placeRoads = false;
 				Vector3 [] cell = new Vector3[4];
-				for (int i = 0; i < listOfCells.Count; i++) {
-						int listOfBuildingCells = Random.Range (3, 5);
-						cell [0] = listOfCells [i].v1_;
-						cell [1] = listOfCells [i].v2_;
-						cell [2] = listOfCells [i].v3_;
-						cell [3] = listOfCells [i].v4_;
-						Partition (cell, listOfBuildingCells, 1);
-				}
+
+				int num = 3;
+				float padding = 30;
+				float offset = 30;
+				InstantiateGameObject ob = new InstantiateGameObject ();
+				GetPavementCell (20.0f);
+				for (int i = 0; i < listOfCells.Count; i++) 
+				{
+							listOfBuildingCells.Clear();
+							int  partitionFactor = getAreaOfCellPartitions(listOfCells[i]);//depending on cell area get partitions factor
+							//int partitionFactor= Random.Range (3, 5);//this should depend on size of the area
+							cell [0] = listOfPavementCells [i].v1_;
+							cell [1] = listOfPavementCells [i].v2_;
+							cell [2] = listOfPavementCells [i].v3_;
+							cell [3] = listOfPavementCells [i].v4_;			
+
+							Vector3 [] slots;// = new Vector3[1];									
+
+							float randomWeight = Random.Range (0.0f, 1.0f);	
+
+							if(randomWeight<=0.2f)
+							{
+								Partition (cell, 8, 1);//CHANGE SECOND NUMBER TO CHANGE NUMBER OF TREES (DON'T GO UNDER 6 THOUGH)
+								GetObjectSlots (out slots, (int)Mathf.Pow(2, partitionFactor), padding, offset);
+								ob.InstantiateAllGameObject (slots, "Tree", "Parks");
+							}
+							else if(randomWeight<=0.5f && randomWeight>0.2f)
+							{
+								Partition (cell, partitionFactor, 1);
+								GetObjectSlots (out slots, (int)Mathf.Pow(2, partitionFactor), padding, offset);
+								ob.InstantiateAllGameObject (slots, "Tree", "Residential");
+							}
+							else if(randomWeight<=0.9f && randomWeight>0.5f)
+							{
+								Partition (cell, partitionFactor, 1);
+								GetObjectSlots (out slots, (int)Mathf.Pow(2, partitionFactor), padding, offset);
+								ob.InstantiateAllGameObject (slots, "Tree", "Industrial");
+							}
+							else if(randomWeight>0.9f)
+							{
+								Partition (cell, partitionFactor, 1);
+								GetObjectSlots (out slots, (int)Mathf.Pow(2, partitionFactor), padding, offset);
+								ob.InstantiateAllGameObject (slots, "Tree", "Commercial");
+							}
+		}
+
+
 		
-				///*
+		/*
 				Vector3 [] slots;// = new Vector3[1];
 				int num = 3;
 				float padding = 30;
@@ -170,10 +211,173 @@ public class SpacePartitioning : MonoBehaviour
 				GetObjectSlots (out slots, num, padding, offset);
 		
 				InstantiateGameObject ob = new InstantiateGameObject ();
-				ob.InstantiateAllGameObject (slots, "Tree");
-				//*/
+				ob.InstantiateAllGameObject (slots, "Tree", false);
+				*/
 		
 		}
+
+	void GetPavementCell (float offset)
+	{
+		float slopeA, slopeB, slopeC, slopeD, int1, int2, int3, int4;
+		
+		Vector3 a, b, c, d, 
+		offsetA, offsetB, offsetC, offsetD,
+		iPoint1, iPoint2, iPoint3, iPoint4;
+		for (int i = 0; i < listOfCells.Count; i++) {
+			//find vectors that point inside of the polygon
+			Vector3 [] insideVectors = GetInsideVectors (listOfCells [i]);
+			//find slope of a, b, c, d, which are the same slopes as pavement lines slopes
+			slopeA = (listOfCells [i].v2_.z - listOfCells [i].v1_.z) / (listOfCells [i].v2_.x - listOfCells [i].v1_.x); 
+			slopeB = (listOfCells [i].v3_.z - listOfCells [i].v2_.z) / (listOfCells [i].v3_.x - listOfCells [i].v2_.x); 
+			slopeC = (listOfCells [i].v4_.z - listOfCells [i].v3_.z) / (listOfCells [i].v4_.x - listOfCells [i].v3_.x); 
+			slopeD = (listOfCells [i].v1_.z - listOfCells [i].v4_.z) / (listOfCells [i].v1_.x - listOfCells [i].v4_.x); 
+			
+			//find point on pavement line
+			//offsetA = new Vector3 (listOfCells [i].v1_.x - offset * insideVectors [0].z, 0, listOfCells [i].v1_.z - offset * insideVectors [0].x);//insideVectors[0] * offset;
+			offsetA =	listOfCells[i].v1_ + offset * insideVectors[0];	
+			//offsetB = new Vector3 (listOfCells [i].v2_.x - offset * insideVectors [1].z, 0, listOfCells [i].v2_.z - offset * insideVectors [1].x);//insideVectors[1] * offset;
+			offsetB =	listOfCells[i].v2_ + offset * insideVectors[1];				
+			//offsetC = new Vector3 (listOfCells [i].v3_.x - offset * insideVectors [2].z, 0, listOfCells [i].v3_.z - offset * insideVectors [2].x);//insideVectors[2] * offset;
+			offsetC =	listOfCells[i].v3_ + offset * insideVectors[2];				
+			//offsetD = new Vector3 (listOfCells [i].v4_.x - offset * insideVectors [3].z, 0, listOfCells [i].v4_.z - offset * insideVectors [3].x);//insideVectors[3] * offset;
+			offsetD =	listOfCells[i].v4_ + offset * insideVectors[3];	
+			//find intercept
+			int1 = offsetA.z - slopeA * offsetA.x;
+			int2 = offsetB.z - slopeB * offsetB.x;
+			int3 = offsetC.z - slopeC * offsetC.x;
+			int4 = offsetD.z - slopeD * offsetD.x;
+			
+			
+			if ((slopeA - slopeB) == 0  
+			    || (slopeB - slopeC) == 0
+			    || (slopeC - slopeD) == 0
+			    || (slopeD - slopeA) == 0) {//this should be never met, because we know that lines are not parallel
+				throw new System.Exception ("Lines are parallel");
+			} else {
+				float iX1 = (int2 - int1) / (slopeA - slopeB);
+				float iZ1 = slopeA * iX1 + int1;
+				iPoint1 = new Vector3 (iX1, 0, iZ1);
+				
+				float iX2 = (int3 - int2) / (slopeB - slopeC);
+				float iZ2 = slopeB * iX2 + int2;
+				iPoint2 = new Vector3 (iX2, 0, iZ2);
+				
+				float iX3 = (int4 - int3) / (slopeC - slopeD);
+				float iZ3 = slopeC * iX3 + int3;
+				iPoint3 = new Vector3 (iX3, 0, iZ3);
+				
+				float iX4 = (int1 - int4) / (slopeD - slopeA);
+				float iZ4 = slopeD * iX4 + int4;
+				iPoint4 = new Vector3 (iX4, 0, iZ4);
+				
+				listOfPavementCells.Add (new Cell (iPoint1, iPoint2, iPoint3, iPoint4));
+				Vector3 [] roadPoints = new Vector3[2];
+				roadPoints [0] = iPoint1;
+				roadPoints [1] = iPoint2;
+				drawRoadMesh (roadPoints);
+				Vector3 [] roadPoints2 = new Vector3[2];
+				roadPoints2 [0] = iPoint2;
+				roadPoints2 [1] = iPoint3;
+				drawRoadMesh (roadPoints2);
+				Vector3 [] roadPoints3 = new Vector3[2];
+				roadPoints3 [0] = iPoint3;
+				roadPoints3 [1] = iPoint4;
+				drawRoadMesh (roadPoints3);
+				Vector3 [] roadPoints4 = new Vector3[2];
+				roadPoints4 [0] = iPoint4;
+				roadPoints4 [1] = iPoint1;
+				drawRoadMesh (roadPoints4);
+			}	
+			
+		}
+	}
+	
+	Vector3 [] GetInsideVectors (Cell currCell)
+	{
+		Vector3 a, b, c, d, uprightA, uprightB, uprightC, uprightD;
+		float AcpU, BcpU, CcpU, DcpU, AcpB, BcpC, CcpD, DcpA;// cp for cross product
+		
+		// get vectors from two points
+		a = currCell.v2_ - currCell.v1_;
+		b = currCell.v3_ - currCell.v2_;
+		c = currCell.v4_ - currCell.v3_;
+		d = currCell.v1_ - currCell.v4_;
+		
+		//find a upright vector to all  vectors
+		
+		uprightA = RoadGenerator.GetUprightVector (a).normalized;
+		uprightB = RoadGenerator.GetUprightVector (b).normalized;
+		uprightC = RoadGenerator.GetUprightVector (c).normalized;
+		uprightD = RoadGenerator.GetUprightVector (d).normalized;
+		
+		//find cross product of vector with its upright vector
+		
+		AcpU = a.x * uprightA.z - uprightA.x * a.z;
+		BcpU = b.x * uprightB.z - uprightB.x * b.z;
+		CcpU = c.x * uprightC.z - uprightC.x * c.z;
+		DcpU = d.x * uprightD.z - uprightD.x * d.z;
+		
+		//find cross product of vector with adjuscent vector
+		
+		AcpB = a.x * b.z - b.x * a.z;
+		BcpC = b.x * c.z - c.x * b.z;
+		CcpD = c.x * d.z - d.x * c.z;
+		DcpA = d.x * a.z - a.x * d.z;
+		
+		//find the upright vector that points to inside of polygon
+		//if both cross products have same sign the product of them will be poistive => upright vector points inside, 
+		//negative => change the sign of upright vector 
+		if (AcpU * AcpB < 0) {
+			uprightA = -uprightA;
+		}
+		if (BcpU * BcpC < 0) {
+			uprightB = -uprightB;
+		}
+		if (CcpU * CcpD < 0) {
+			uprightC = -uprightC;
+		}
+		if (DcpU * DcpA < 0) {
+			uprightD = -uprightD;
+		}
+		
+		//Debug.Log("u1: " + uprightA); 
+		//Debug.Log("u2: " + uprightB);
+		//Debug.Log("u3: " + uprightC);
+		//Debug.Log("u4: " + uprightD);
+		
+		Vector3 [] uprightVectors = {uprightA, uprightB, uprightC, uprightD};
+		
+		return uprightVectors;
+	}
+	
+	int getAreaOfCellPartitions(Cell c)
+	{
+		float area = Mathf.Abs(((c.v1_.x * c.v2_.z - c.v1_.z * c.v2_.x) + (c.v2_.x * c.v3_.z - c.v2_.z * c.v3_.x) 
+		                        + (c.v3_.x * c.v4_.z - c.v3_.z * c.v4_.x) + (c.v4_.x * c.v1_.z - c.v4_.z * c.v1_.x))/2);
+		area /=1000;
+		if(area <= 10)
+		{
+			return 2;
+		}else if(area <=20 && area >10 )
+		{
+			return 3;
+		}else if(area <=30 && area >20 )
+		{
+			return 3;
+		}else if(area <=40 && area >30 )
+		{
+			return 4;
+		}else if(area <=50 && area >40 )
+		{
+			return 4;
+		}else if(area >50)
+		{
+			return 5;
+		}
+		else{
+			return 0;
+		}
+	}
 	
 		void PartitionForCurve (Curve[] CurveList, int counter, int ind)
 		{
@@ -237,17 +441,18 @@ public class SpacePartitioning : MonoBehaviour
 				}
 		}
 	
-		void Partition (Vector3[] verticesList, int counter, int ind)
+	void Partition (Vector3[] verticesList, int counter, int ind)
 		{
 				Vector3[] roadPoints = new Vector3[2];
 				Vector3[] roadPointsDivided = new Vector3[2];
 				int index1, index2, index3, index4;
 				if (counter == 0) {
-						if (placeRoads) {
+					if (placeRoads) {
 								listOfCells.Add (new Cell (verticesList [0], verticesList [1], verticesList [2], verticesList [3]));
 						} else {
 								listOfBuildingCells.Add (new Cell (verticesList [0], verticesList [1], verticesList [2], verticesList [3]));
 						}
+
 						return;
 			
 				}
@@ -274,21 +479,21 @@ public class SpacePartitioning : MonoBehaviour
 		
 				//add 4 line segments to the list
 				if (counter < 3 && placeRoads) {
-						//        /*
+						 //      /*
 						listOfPoints.Add (new Pair (verticesList [index1], p1));
 						listOfPoints.Add (new Pair (p1, verticesList [index3]));
 			
 						listOfPoints.Add (new Pair (verticesList [index2], p2));
 						listOfPoints.Add (new Pair (p2, verticesList [index4]));
-						//        */
+						 //      */
 				}
 				if (counter == 1 && placeRoads) {
 						listOfPoints.Add (new Pair (p1, p2));
 			
 				}
 				if (placeRoads) {
-						//drawRoadMesh (roadPoints);
-						curvedSegments (roadPoints); // Uses curve segments method
+			drawRoadMesh (roadPoints);
+						//curvedSegments (roadPoints); // Uses curve segments method
 				}
 		
 				Vector3 [] collection1;
@@ -317,7 +522,7 @@ public class SpacePartitioning : MonoBehaviour
 		
 		}
 	
-		public void GetObjectSlots (out Vector3[] slots, int segmentsNum, float padding, float offset)
+		public void GetObjectSlots (out Vector3[] slots,  int segmentsNum, float padding, float offset)
 		{
 				/*******************Uncomment this code for street lamps positions******************
                                 slots = new Vector3[(segmentsNum + 1) * listOfPoints.Count * 2];
@@ -343,11 +548,11 @@ public class SpacePartitioning : MonoBehaviour
                                                 }
                                                 index += loopCount;
                                 }
-                                ***************************************************************************/
+                              ***************************************************************************/
 		
 				/*******This code is for finding midlle point of building cells (also used for trees)*******/
-				slots = new Vector3[listOfBuildingCells.Count];
-				for (int i = 0; i <listOfBuildingCells.Count; i++) {
+		slots = new Vector3[listOfBuildingCells.Count];
+		for (int i = 0; i <listOfBuildingCells.Count; i++) {
 						//find midpoints of every side of cell
 						float t = 0.5f;
 			
@@ -358,7 +563,7 @@ public class SpacePartitioning : MonoBehaviour
 			
 						slots [i] = LineIntersectionPoint (midpoint1, midpoint3, midpoint2, midpoint4);
 				}
-		
+
 		}
 	
 		Vector3 LineIntersectionPoint (Vector3 pS1, Vector3 pE1, Vector3 pS2, Vector3 pE2)
@@ -423,13 +628,13 @@ public class SpacePartitioning : MonoBehaviour
 
 		public void drawRoadMesh (Vector3[]roadPoints)
 		{
-				Mesh mesh = RoadGenerator.GenerateRoadSegments (roadPoints, 10);
-				//Mesh mesh = MeshCombiner.CombineMesh(meshs);
-				GameObject road = new GameObject ("Road", typeof(MeshFilter), typeof(MeshRenderer));
-				road.transform.position = new Vector3 (0, current_offset, 0);
-				road.transform.parent = roadContainer.transform;
+//				Mesh mesh = RoadGenerator.GenerateRoadSegments (roadPoints, 10);
+//				//Mesh mesh = MeshCombiner.CombineMesh(meshs);
+//				GameObject road = new GameObject ("Road", typeof(MeshFilter), typeof(MeshRenderer));
+//				road.transform.position = new Vector3 (0, current_offset, 0);
+//				road.transform.parent = roadContainer.transform;
 
-				if (placeLamps) {
+				if (placeLamps && !placeRoads) {
 					int count = 0;
 					
 					while (count < roadPoints.Length - 1) {
@@ -443,14 +648,27 @@ public class SpacePartitioning : MonoBehaviour
 						streetLamp.transform.parent = lampContainer.transform;
 						count += 50;
 					}
-				}
+		}else if(placeRoads)
+		{
+			Mesh mesh = RoadGenerator.GenerateRoadSegments (roadPoints, 10);
+			GameObject road = new GameObject ("Road", typeof(MeshFilter), typeof(MeshRenderer));
+			road.transform.position = new Vector3 (0, current_offset, 0);
+			road.transform.parent = roadContainer.transform;
+
+			MeshFilter meshFilter = road.GetComponent<MeshFilter> ();
+			meshFilter.mesh = mesh;
+			MeshRenderer meshRender = road.GetComponent<MeshRenderer> ();
+			//meshRender.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+			meshRender.material = Resources.Load ("RoadMat") as Material;
+			meshRender.castShadows = false;                //Since the mesh is slightly above the ground, it may cast shadow so lets turn it off
+		}
 		
-				MeshFilter meshFilter = road.GetComponent<MeshFilter> ();
-				meshFilter.mesh = mesh;
-				MeshRenderer meshRender = road.GetComponent<MeshRenderer> ();
-				//meshRender.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
-				meshRender.material = Resources.Load ("RoadMat") as Material;
-				meshRender.castShadows = false;                //Since the mesh is slightly above the ground, it may cast shadow so lets turn it off
+//				MeshFilter meshFilter = road.GetComponent<MeshFilter> ();
+//				meshFilter.mesh = mesh;
+//				MeshRenderer meshRender = road.GetComponent<MeshRenderer> ();
+//				//meshRender.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+//				meshRender.material = Resources.Load ("RoadMat") as Material;
+//				meshRender.castShadows = false;                //Since the mesh is slightly above the ground, it may cast shadow so lets turn it off
 		}
 	
 		// Update is called once per frame

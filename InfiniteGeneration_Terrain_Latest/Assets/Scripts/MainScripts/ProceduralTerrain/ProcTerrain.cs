@@ -76,7 +76,20 @@ public class ProcTerrain : ProceduralBase
 
 		MeshRenderer meshRenderer = gameObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
 		meshRenderer.material.mainTexture = Resources.Load("Textures/Grass&Rock") as Texture;
-	
+		meshRenderer.material.shader = Shader.Find ("Custom/TerrainShader");
+
+		/*
+		Texture2D colorMap = (Texture2D) Resources.Load("ColorMap/ColorMap_d-54");
+		Texture2D normalMap = (Texture2D) Resources.Load("NormalMap/NormalMap_d-41");
+		Texture2D lightMap = (Texture2D) Resources.Load("LightMap/LightMap_d-8");
+		Texture2D splatMap = (Texture2D) Resources.Load("SplatMap/SplatMap_d-60");
+		
+		meshRenderer.material.mainTexture = colorMap;
+		meshRenderer.material.SetTexture("_LightMap", lightMap);
+		meshRenderer.material.SetTexture("_SplatMap", splatMap);
+		meshRenderer.material.SetTexture("_NormalMap", normalMap);
+		*/
+
 		MeshCollider meshcollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
 		meshcollider.sharedMesh = mesh;
 
