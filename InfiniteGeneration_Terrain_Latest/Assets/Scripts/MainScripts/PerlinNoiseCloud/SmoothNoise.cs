@@ -1,11 +1,3 @@
-//-----------------------------------------------------------------------------
-//
-// Title: 		SmoothNoise
-// Creator: 	FKM1900
-// Based on: 	Herman Tulleken, http://devmag.org.za/2009/04/25/perlin-noise/
-//
-//-----------------------------------------------------------------------------
-
 using UnityEngine;
 using System.Collections;
 

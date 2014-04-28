@@ -7,7 +7,7 @@ public class CrossFade : MonoBehaviour
 	private Vector2    newOffset;
 	private Vector2    newTiling;
 	
-	public  float    BlendSpeed = 0.05f;
+	private  float    BlendSpeed = 0.15f;
 	
 	private bool    trigger = false;
 	private float    fader = 0f;
