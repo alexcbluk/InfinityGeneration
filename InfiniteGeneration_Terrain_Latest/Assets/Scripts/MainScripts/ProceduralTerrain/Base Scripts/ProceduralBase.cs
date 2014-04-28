@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// Base class for procedural meshes. Contains generic initialisation code and shared methods such as BuildQuad() and BuildRing()
+/// Base class for procedural meshes. Contains generic initialisation code and shared methods such as BuildQuad() and BuildQuadForGrid()
 /// </summary>
 public abstract class ProceduralBase : MonoBehaviour
 {

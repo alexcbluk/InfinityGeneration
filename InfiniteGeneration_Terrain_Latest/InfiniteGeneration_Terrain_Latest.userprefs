@@ -1,8 +1,16 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\MainScripts\GameTime.cs">
     <Files>
-      <File FileName="Assets\Scripts\MainScripts\GameTime.cs" Line="132" Column="1" />
+      <File FileName="Assets\Scripts\MainScripts\GameTime.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\MainScripts\ProceduralTerrain\DiamondSquare.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\MainScripts\ProceduralTerrain\Base Scripts\ProceduralBase.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\UnusedScripts\PerlinNoiseTerrain\TerrainGeneration.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\UnusedScripts\OldSkybox\Sun.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\MainScripts\GameTime.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\MainScripts\ProceduralTerrain\ProcTerrain.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\MainScripts\ProceduralTerrain\Base Scripts\MeshBuilder.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\UnusedScripts\PerlinNoiseTerrain\PerlinNoise.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

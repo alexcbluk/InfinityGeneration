@@ -67,7 +67,7 @@
      <Compile Include="Assets\Scripts\UnusedScripts\LSystem.cs" />
      <Compile Include="Assets\Scripts\UnusedScripts\MeshCombiner.cs" />
      <Compile Include="Assets\Scripts\UnusedScripts\NewBehaviourScript.cs" />
-     <Compile Include="Assets\Scripts\UnusedScripts\OldSkybox\GameTimeBlah.cs" />
+     <Compile Include="Assets\Scripts\UnusedScripts\OldSkybox\OldGameTime.cs" />
      <Compile Include="Assets\Scripts\UnusedScripts\OldSkybox\Sun.cs" />
      <Compile Include="Assets\Scripts\UnusedScripts\OldSkybox\TimedLighting.cs" />
      <Compile Include="Assets\Scripts\UnusedScripts\PerlinNoiseTerrain\PerlinNoise.cs" />

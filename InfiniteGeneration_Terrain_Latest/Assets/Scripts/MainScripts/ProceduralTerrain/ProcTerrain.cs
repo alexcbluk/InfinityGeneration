@@ -32,7 +32,6 @@ public class ProcTerrain : ProceduralBase
 	//Build the mesh:
 	public override Mesh BuildMesh()
 	{
-		#region Not needed
 		//Create a new mesh builder:
 		MeshBuilder meshBuilder = new MeshBuilder();
 		sizeOfTerrain = meshWidth*meshSegmentCount;
@@ -52,7 +51,7 @@ public class ProcTerrain : ProceduralBase
 				float x = (float)meshWidth * j;
 				float u = (1.0f / meshSegmentCount) * j;
 
-				//The position offset for this quad, with a random height between zero and m_MaxHeight:
+				//The position offset for this quad, with the given height from the Diamond Square Algorithm
 				Vector3 offset = new Vector3(x, DiamondSquare.SampleHeightMap(x/sizeOfTerrain, z/sizeOfTerrain), z);
 
 				//build quads that share vertices:
@@ -63,7 +62,6 @@ public class ProcTerrain : ProceduralBase
 			}
 		}
 
-		#endregion 
 
 		//create the Unity mesh:
 		Mesh mesh = meshBuilder.CreateMesh();

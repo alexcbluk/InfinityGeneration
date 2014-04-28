@@ -77,7 +77,7 @@ public class GameTime : MonoBehaviour {
 		}
 		
 		//Transition to Sun Set Setting
-		if(TOD > 4 && TOD <= 6){
+		if(TOD > 4 && TOD < 6){
 			RenderSettings.skybox = SkyBoxNightToMorning;
 			RenderSettings.skybox.SetFloat("_Blend", 0);
 			RenderSettings.skybox.SetFloat("_Blend", (TOD/2)-2);
@@ -115,7 +115,7 @@ public class GameTime : MonoBehaviour {
 
 			status = "Day Time";
 		}
-
+	
 		//GUI Text:
 		displayTime.text = "Time: " + (int)Hour + ":00" + "  Setting: " + status;
 

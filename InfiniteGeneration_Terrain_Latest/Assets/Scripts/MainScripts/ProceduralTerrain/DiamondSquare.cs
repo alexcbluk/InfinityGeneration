@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+/// <summary>
+/// The “DiamondSquare.cs” script is used for generating the sample height values for the terrain mesh. 
+/// It contains the diamond square algorithm and a share method “SampleHeightMap” to return the height value of a given position in the terrain mesh.
+/// </summary>
 
 public class Point
 {
@@ -23,15 +26,7 @@ public class DiamondSquare : ProceduralBase {
 	static public float[] currentHeights;
 	static public float startingHeight = 1;
 	static public int heightIncrement = 20;
-	//Vector3 point1,point2,point3,point4;		
-	
-	
-	// Use this for initialization
-	//void Start () {
-		//currentHeights = new float[4]{1,1,1,1};
-		//DiamondSquareAlgorithm(0, 0, mapSize);
-		//SampleHeightMap(0.49f, 1.0f);
-	//}
+
 
 	static public void initializeDiamondSquare(int s)
 	{
